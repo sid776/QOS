@@ -3,6 +3,7 @@ set -e
 
 PORT="${PORT:-8000}"
 PGDATA="${PGDATA:-/data/postgres}"
+export PATH="/usr/lib/postgresql/15/bin:$PATH"
 
 start_embedded_postgres() {
   echo "============================================================"
