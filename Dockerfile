@@ -4,6 +4,10 @@ WORKDIR /dashboard
 COPY apps/dashboard/package.json apps/dashboard/package-lock.json ./
 RUN npm ci
 COPY apps/dashboard .
+# bundledDocs.ts imports ../../../../README.md and ../../../../docs/*.md
+# which resolve to the filesystem root of this stage. Copy them in.
+COPY README.md /README.md
+COPY docs /docs
 # Same-origin API calls in production (FastAPI serves UI + /v1/*)
 ENV VITE_API_URL=
 RUN npm run build
