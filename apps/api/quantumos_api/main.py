@@ -1,3 +1,4 @@
+import logging
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
@@ -15,14 +16,24 @@ from apps.api.quantumos_api.routers import (
     use_cases,
     docs,
 )
-from db.models import Base
-from db.session import engine
+from db.bootstrap import init_database
+
+logger = logging.getLogger("quantumos.api")
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    Base.metadata.create_all(bind=engine)
+    # Do not block HTTP startup — Railway healthcheck hits /health while Postgres spins up.
+    import asyncio
+
+    async def _bootstrap_db() -> None:
+        ok = await asyncio.to_thread(init_database, 120, 2.0)
+        if not ok:
+            logger.warning("API running without database — job/audit endpoints may fail until DATABASE_URL is set")
+
+    task = asyncio.create_task(_bootstrap_db())
     yield
+    task.cancel()
 
 
 app = FastAPI(

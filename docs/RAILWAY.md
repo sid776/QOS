@@ -2,77 +2,97 @@
 
 Repo: [github.com/sid776/QOS](https://github.com/sid776/QOS)
 
-## Architecture
+## Why the deploy failed
 
-| Service | Dockerfile | Port | Purpose |
-|---------|------------|------|---------|
-| **API** | `Dockerfile` | `$PORT` (Railway) | FastAPI backend |
-| **Dashboard** | `Dockerfile.dashboard` | 80 | React SPA (nginx) |
-| **PostgreSQL** | Railway plugin | 5432 | Database |
+The API defaults to `localhost:5432` when **`DATABASE_URL` is missing**. On Railway there is no Postgres on localhost — you must add a Railway PostgreSQL database and **reference its `DATABASE_URL`** on the QOS service.
 
-## Step 1 — Push to GitHub
+## Fix (existing Railway project) — 2 minutes
 
-Already done if you cloned from `sid776/QOS`. Local push:
+### Step 1 — Add PostgreSQL
 
-```bash
-git remote add origin https://github.com/sid776/QOS.git
-git push -u origin main
-```
+1. Open your Railway project
+2. Click **+ New** → **Database** → **Add PostgreSQL**
+3. Wait until Postgres shows **Active**
 
-## Step 2 — Create Railway project
+### Step 2 — Link DATABASE_URL to QOS
 
-1. Go to [railway.app](https://railway.app) → **New Project** → **Deploy from GitHub repo**
-2. Select **sid776/QOS**
-3. Railway creates a service from the root `Dockerfile` (API)
+1. Click your **QOS** (API) service (not Postgres)
+2. Go to **Variables**
+3. Click **+ New Variable** → **Add Reference**
+4. Select the **Postgres** service → **`DATABASE_URL`**
+5. Confirm the variable appears as `DATABASE_URL` (value hidden)
 
-## Step 3 — Add PostgreSQL
-
-1. In the project → **+ New** → **Database** → **PostgreSQL**
-2. Open the **API** service → **Variables** → **Add reference** → link `DATABASE_URL` from Postgres
-
-Also set:
+Also add (plain values):
 
 | Variable | Value |
 |----------|--------|
 | `QUANTUMOS_ENV` | `production` |
 | `DEFAULT_TENANT_ID` | `tenant_demo` |
 
-Generate a domain for the API: **Settings → Networking → Generate Domain** (e.g. `qos-api-production.up.railway.app`).
+### Step 3 — Redeploy
 
-## Step 4 — Deploy the dashboard (second service)
+1. QOS service → **Deployments** → **Redeploy**
+2. Check logs — you should see `Database ready`
+3. Open `https://YOUR-API-DOMAIN/health` — expect `"database": "connected"`
 
-1. **+ New** → **GitHub Repo** → same **QOS** repo
-2. **Settings → Build → Dockerfile path**: `Dockerfile.dashboard`
-3. **Variables** (required at build time):
+---
 
-| Variable | Example |
-|----------|---------|
-| `VITE_API_URL` | `https://qos-api-production.up.railway.app` |
+## Fresh deploy (template with Postgres included)
 
-4. **Settings → Networking → Generate Domain** for the dashboard
+Use the included template so Postgres + `DATABASE_URL` are wired automatically:
 
-> **Important:** `VITE_API_URL` is baked in at build time. After changing it, trigger a **Redeploy**.
+1. Railway → **New Project** → **Deploy a template** (or import `railway.template.json`)
+2. Or manually create two services from [railway.template.json](./railway.template.json):
+   - **Postgres** — database plugin
+   - **QOS** — GitHub repo, Dockerfile `Dockerfile`, variable `DATABASE_URL=${{Postgres.DATABASE_URL}}`
 
-## Step 5 — Verify
+---
+
+## Architecture
+
+| Service | Dockerfile | Notes |
+|---------|------------|--------|
+| **QOS (API)** | `Dockerfile` | Requires `DATABASE_URL` on Railway |
+| **Postgres** | Railway plugin | Auto-provisioned |
+| **Dashboard** | `Dockerfile.dashboard` | Set `VITE_API_URL` to API public URL |
+
+## Dashboard (optional second service)
+
+1. **+ New** → same GitHub repo
+2. Dockerfile path: `Dockerfile.dashboard`
+3. Variable: `VITE_API_URL=https://YOUR-API-DOMAIN.railway.app`
+4. Generate public domain → redeploy
+
+## Verify
 
 ```bash
 curl https://YOUR-API-DOMAIN/health
 ```
 
-Open the dashboard URL → **Industry Apps** → run any use case.
+Expected:
 
-## Local Docker (same images as Railway)
+```json
+{
+  "status": "ok",
+  "database": "connected",
+  "use_case_count": 16
+}
+```
+
+## Troubleshooting
+
+| Symptom | Fix |
+|---------|-----|
+| Crash: `connection refused localhost:5432` | `DATABASE_URL` not set — follow Step 2 above |
+| `"database": "pending"` in /health | Postgres still starting; wait 1–2 min or redeploy |
+| Entrypoint error about DATABASE_URL | Add Postgres reference variable, redeploy |
+| Use cases work but jobs fail | DB not connected yet — check /health |
+
+## Local Docker (includes Postgres)
 
 ```bash
 cp .env.example .env
 docker compose up --build
 ```
 
-## Troubleshooting
-
-| Issue | Fix |
-|-------|-----|
-| API 502 on startup | Wait for Postgres; check `DATABASE_URL` is linked |
-| Dashboard can't reach API | Set `VITE_API_URL` to public API URL and redeploy dashboard |
-| Use cases 404 | Ensure API image includes `use_cases/` (root `Dockerfile` does) |
-| CORS errors | API allows all origins in MVP; check `VITE_API_URL` matches API domain |
+Uses internal hostname `postgres` — no manual `DATABASE_URL` needed locally.

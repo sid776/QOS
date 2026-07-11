@@ -1,0 +1,24 @@
+{
+  "name": "QuantumOS",
+  "description": "QuantumOS API + PostgreSQL — agentic quantum operating layer",
+  "services": {
+    "QOS": {
+      "source": {
+        "repo": "sid776/QOS",
+        "branch": "main"
+      },
+      "build": {
+        "builder": "DOCKERFILE",
+        "dockerfilePath": "Dockerfile"
+      },
+      "variables": {
+        "DATABASE_URL": "${{Postgres.DATABASE_URL}}",
+        "QUANTUMOS_ENV": "production",
+        "DEFAULT_TENANT_ID": "tenant_demo"
+      }
+    },
+    "Postgres": {
+      "image": "ghcr.io/railwayapp-templates/postgres-ssl:16"
+    }
+  }
+}
