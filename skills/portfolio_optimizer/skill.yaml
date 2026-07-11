@@ -1,0 +1,29 @@
+name: portfolio_optimizer
+version: 0.2.0
+type: optimization
+description: Risk-aware portfolio allocation using synthetic expected returns and volatility — weights shift from equal-weight (low risk) to concentrated (high risk).
+default_job_type: optimization
+category: Finance
+icon: "📈"
+result_view: portfolio
+features:
+  - Multi-asset allocation
+  - Risk profile selector
+  - Budget distribution with pie chart
+  - Expected return and volatility metrics
+input_fields:
+  - name: assets
+    type: tags
+    label: Assets
+    default: ["AAPL", "MSFT", "NVDA", "GOOG"]
+    help: Ticker symbols or asset names
+  - name: budget
+    type: number
+    label: Budget (USD)
+    min: 1000
+    default: 100000
+  - name: risk
+    type: select
+    label: Risk profile
+    options: ["low", "medium", "high"]
+    default: medium

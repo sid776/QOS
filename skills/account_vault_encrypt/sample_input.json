@@ -1,0 +1,9 @@
+{
+  "account_email": "user@enterprise.example",
+  "account_display_name": "Alex Chen",
+  "tenant_id": "org_7f3a9c2e",
+  "gateway_name": "identity-edge-gw-prod",
+  "purpose": "zero_trust_session",
+  "mfa_enabled": true,
+  "account_roles": ["user", "billing_admin"]
+}

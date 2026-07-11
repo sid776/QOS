@@ -1,0 +1,11 @@
+# Default service config when Railway builds from repo root (API).
+# For the dashboard, create a second Railway service and set Dockerfile path to Dockerfile.dashboard
+
+[build]
+builder = "dockerfile"
+dockerfilePath = "Dockerfile"
+
+[deploy]
+healthcheckPath = "/health"
+healthcheckTimeout = 120
+restartPolicyType = "on_failure"

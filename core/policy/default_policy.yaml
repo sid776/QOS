@@ -1,0 +1,21 @@
+name: default_policy
+version: 0.1.0
+
+rules:
+  - id: block_cloud_without_approval
+    if:
+      allow_cloud_quantum: false
+    deny_provider_types:
+      - cloud_quantum
+
+  - id: max_cost_zero
+    if:
+      max_cost_usd: 0
+    require_providers:
+      - local
+
+  - id: block_sensitive_data_in_research
+    if:
+      data_classification: restricted
+    deny_capabilities:
+      - external_execution

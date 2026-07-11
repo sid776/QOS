@@ -1,0 +1,28 @@
+name: bb84_simulator
+version: 0.2.0
+type: qkd_simulation
+description: Full BB84 quantum key distribution simulation — Alice encodes random bits, Bob measures in random bases, sift matching bases, and estimate quantum bit error rate.
+default_job_type: qkd_simulation
+category: Quantum cryptography
+icon: "🔐"
+result_view: bb84
+features:
+  - Alice/Bob basis reconciliation
+  - Sifted key extraction
+  - QBER estimation on sample bits
+  - Protocol timeline visualization
+input_fields:
+  - name: bits
+    type: number
+    label: Raw bits
+    min: 16
+    max: 256
+    default: 64
+    help: Number of bits Alice encodes
+  - name: sample_check
+    type: number
+    label: QBER sample size
+    min: 4
+    max: 32
+    default: 8
+    help: Bits revealed to estimate error rate

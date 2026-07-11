@@ -1,0 +1,22 @@
+name: crypto_migration_scan
+version: 0.2.0
+type: security
+description: Scan source code for legacy cryptography patterns (RSA, ECDSA, MD5, SHA-1) and get NIST PQC migration recommendations.
+default_job_type: security
+category: Security
+icon: "🔍"
+result_view: findings
+features:
+  - Pattern-based weak crypto detection
+  - Line-level findings with severity
+  - PQC migration suggestions
+  - Overall risk assessment
+input_fields:
+  - name: code
+    type: code
+    label: Source code
+    default: |
+      from Crypto.PublicKey import RSA
+      hash = MD5.new(data)
+      curve = ECDSA.sign(msg)
+    help: Paste Python or any code snippet to scan

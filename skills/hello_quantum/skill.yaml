@@ -1,0 +1,27 @@
+name: hello_quantum
+version: 0.2.0
+type: quantum_demo
+description: Build and simulate a Bell-state circuit — Hadamard on qubit 0, CNOT to qubit 1, then measure both qubits.
+default_job_type: circuit_simulation
+category: Quantum circuits
+icon: "⚛️"
+result_view: circuit
+features:
+  - Interactive qubit and shot configuration
+  - Step-by-step circuit gate list
+  - Provider-backed measurement histogram
+input_fields:
+  - name: qubits
+    type: number
+    label: Qubits
+    min: 2
+    max: 4
+    default: 2
+    help: Bell demo uses 2 qubits; extra qubits get Hadamard only
+  - name: shots
+    type: number
+    label: Shots
+    min: 64
+    max: 8192
+    default: 1024
+    help: Number of circuit repetitions for statistics

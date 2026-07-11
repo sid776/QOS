@@ -1,0 +1,23 @@
+name: route_optimizer
+version: 0.2.0
+type: optimization
+description: Traveling-salesperson route planning with nearest-neighbor heuristic — optimizes stop order and reports leg distances.
+default_job_type: optimization
+category: Logistics
+icon: "🗺️"
+result_view: route
+features:
+  - Nearest-neighbor TSP heuristic
+  - Per-leg distance breakdown
+  - Total route distance
+  - Reorderable stop list
+input_fields:
+  - name: stops
+    type: tags
+    label: Stops
+    default: ["Warehouse", "Store A", "Store B", "Store C", "Store D"]
+    help: First stop is the depot / starting point
+  - name: return_to_start
+    type: boolean
+    label: Return to depot
+    default: true

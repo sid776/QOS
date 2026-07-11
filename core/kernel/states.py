@@ -1,0 +1,13 @@
+from enum import StrEnum
+
+
+class JobState(StrEnum):
+    CREATED = "CREATED"
+    QUEUED = "QUEUED"
+    PLANNING = "PLANNING"
+    ROUTING = "ROUTING"
+    RUNNING = "RUNNING"
+    COMPLETED = "COMPLETED"
+    FAILED = "FAILED"
+    REJECTED = "REJECTED"
+    CANCELLED = "CANCELLED"

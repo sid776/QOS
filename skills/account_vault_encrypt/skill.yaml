@@ -1,0 +1,31 @@
+name: account_vault_encrypt
+version: 1.0.0
+type: post_quantum_crypto
+description: Encrypt account records with NIST FIPS 203 ML-KEM-768 + FIPS 204 ML-DSA-65 + AES-256-GCM — quantum-resistant identity vault.
+default_job_type: post_quantum_crypto
+category: Security
+icon: "🔐"
+result_view: encryption
+features:
+  - NIST ML-KEM-768 key encapsulation (FIPS 203)
+  - NIST ML-DSA-65 account binding signature (FIPS 204)
+  - AES-256-GCM authenticated encryption
+  - QRNG-backed session nonce binding
+  - CNSA 2.0 migration aligned
+input_fields:
+  - name: account_email
+    type: text
+    label: Account email
+    default: "user@enterprise.example"
+  - name: tenant_id
+    type: text
+    label: Tenant ID
+    default: "org_7f3a9c2e"
+  - name: gateway_name
+    type: text
+    label: Gateway name
+    default: "identity-edge-gw-prod"
+  - name: purpose
+    type: text
+    label: Binding purpose
+    default: "zero_trust_session"

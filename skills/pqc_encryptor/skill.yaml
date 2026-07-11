@@ -1,0 +1,24 @@
+name: pqc_encryptor
+version: 0.2.0
+type: post_quantum_crypto
+description: Encrypt payloads with NIST ML-KEM/ML-DSA when account fields present; legacy mock path for generic demos.
+default_job_type: post_quantum_crypto
+category: Security
+icon: "🛡️"
+result_view: encryption
+features:
+  - JSON payload encryption
+  - Ciphertext preview
+  - Algorithm and key metadata
+  - Production warning banner
+input_fields:
+  - name: message
+    type: text
+    label: Message
+    default: "hello quantum-safe world"
+    help: Plaintext message to encrypt (stored in payload.message)
+  - name: label
+    type: text
+    label: Payload label
+    default: "demo"
+    help: Optional metadata label

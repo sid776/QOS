@@ -1,0 +1,714 @@
+{
+  "summary": {
+    "total": 8,
+    "completed": 8,
+    "failed": 0
+  },
+  "results": [
+    {
+      "use_case_id": "fintech_portfolio_rebalance",
+      "industry": "Fintech / Asset Management",
+      "title": "Multi-asset portfolio rebalance (agent pipeline)",
+      "problem": "Allocate $2.5M across tech equities under medium risk with zero cloud quantum spend.",
+      "quantum_value": "Quantum-inspired optimizers and simulators can explore allocation landscapes; pipeline picks local backend and explains results.",
+      "mode": "workflow",
+      "status": "COMPLETED",
+      "started_at": "2026-06-02T14:53:16.816465+00:00",
+      "completed_at": "2026-06-02T14:53:16.866042+00:00",
+      "output": {
+        "workflow_id": "7e3527e6-0d9a-407b-81f9-11b6a7eeadc8",
+        "workflow_name": "portfolio_quantum_pipeline",
+        "status": "COMPLETED",
+        "recommendation": "Use mock_provider for cost-zero portfolio runs. The quantum simulator measured the circuit many times. The count distribution shows how often each bitstring appeared.",
+        "final_job_id": "job_57476d1b-de78-48bf-8a3a-c1e8b0e80e8e",
+        "final_result": {
+          "provider": "mock_provider",
+          "mock": true,
+          "counts": {
+            "00": 512,
+            "11": 512
+          },
+          "skill": {
+            "skill": "portfolio_optimizer",
+            "weights": {
+              "AAPL": 0.2,
+              "MSFT": 0.2,
+              "NVDA": 0.2,
+              "GOOGL": 0.2,
+              "AMZN": 0.2
+            },
+            "allocation": {
+              "AAPL": 500000.0,
+              "MSFT": 500000.0,
+              "NVDA": 500000.0,
+              "GOOGL": 500000.0,
+              "AMZN": 500000.0
+            },
+            "budget": 2500000.0,
+            "risk": "medium"
+          }
+        },
+        "steps": [
+          {
+            "step_id": "cef224ea",
+            "agent": "SecurityPolicyAgent",
+            "status": "completed",
+            "summary": "Policy gate for optimization workload",
+            "output": {
+              "allowed": true,
+              "reason": "Job complies with default policy",
+              "policy_version": "0.1.0"
+            }
+          },
+          {
+            "step_id": "cc85f732",
+            "agent": "OptimizationAgent",
+            "status": "completed",
+            "summary": "Built optimization workflow plan",
+            "output": {
+              "workflow": "classical_heuristic",
+              "recommended_provider": "classical_local",
+              "steps": [
+                "Parse optimization objective",
+                "Encode variables",
+                "Run solver",
+                "Decode solution"
+              ]
+            }
+          },
+          {
+            "step_id": "f4bb4f4b",
+            "agent": "BackendSelectionAgent",
+            "status": "completed",
+            "summary": "Selected backend: mock_provider",
+            "output": {
+              "recommended_provider": "mock_provider",
+              "reason": "Cloud execution is not allowed and local provider supports this job type."
+            }
+          },
+          {
+            "step_id": "d7972910",
+            "agent": "JobExecutor",
+            "status": "completed",
+            "summary": "Portfolio job job_57476d1b-de78-48bf-8a3a-c1e8b0e80e8e \u2192 COMPLETED",
+            "output": {
+              "job_id": "job_57476d1b-de78-48bf-8a3a-c1e8b0e80e8e",
+              "state": "COMPLETED",
+              "selected_provider": "mock_provider",
+              "result": {
+                "provider": "mock_provider",
+                "mock": true,
+                "counts": {
+                  "00": 512,
+                  "11": 512
+                },
+                "skill": {
+                  "skill": "portfolio_optimizer",
+                  "weights": {
+                    "AAPL": 0.2,
+                    "MSFT": 0.2,
+                    "NVDA": 0.2,
+                    "GOOGL": 0.2,
+                    "AMZN": 0.2
+                  },
+                  "allocation": {
+                    "AAPL": 500000.0,
+                    "MSFT": 500000.0,
+                    "NVDA": 500000.0,
+                    "GOOGL": 500000.0,
+                    "AMZN": 500000.0
+                  },
+                  "budget": 2500000.0,
+                  "risk": "medium"
+                }
+              },
+              "error": null
+            }
+          },
+          {
+            "step_id": "b782efef",
+            "agent": "ExplanationAgent",
+            "status": "completed",
+            "summary": "The quantum simulator measured the circuit many times. The count distribution shows how often each bitstring appeared.",
+            "output": {
+              "explanation": "The quantum simulator measured the circuit many times. The count distribution shows how often each bitstring appeared.",
+              "state": "COMPLETED"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "use_case_id": "logistics_delivery_routes",
+      "industry": "Logistics / Supply Chain",
+      "title": "Last-mile delivery stop ordering",
+      "problem": "Optimize visit order for 8 urban delivery stops from a central warehouse.",
+      "quantum_value": "QUBO/route formulations map cleanly to quantum annealing and QAOA; MVP uses classical heuristic with same API surface.",
+      "mode": "job",
+      "status": "COMPLETED",
+      "started_at": "2026-06-02T14:53:16.866042+00:00",
+      "completed_at": "2026-06-02T14:53:16.888932+00:00",
+      "output": {
+        "job_id": "job_858be673-96a0-4d7a-aa83-a735e4ed2461",
+        "state": "COMPLETED",
+        "selected_provider": "mock_provider",
+        "result": {
+          "provider": "mock_provider",
+          "mock": true,
+          "counts": {
+            "00": 512,
+            "11": 512
+          },
+          "skill": {
+            "skill": "route_optimizer",
+            "ordered_stops": [
+              "Airport Cargo",
+              "Downtown Office",
+              "Hospital",
+              "Industrial Park",
+              "North Mall",
+              "Suburb Depot",
+              "University",
+              "Warehouse Hub"
+            ],
+            "total_distance_estimate": 80,
+            "method": "nearest_neighbor_classical"
+          }
+        },
+        "error": null
+      }
+    },
+    {
+      "use_case_id": "bank_legacy_crypto_audit",
+      "industry": "Banking / Compliance",
+      "title": "Legacy banking stack PQC migration assessment",
+      "problem": "Audit payment-gateway code for quantum-vulnerable algorithms before regulatory PQC deadlines.",
+      "quantum_value": "Post-quantum threat model drives migration; agents + skills flag RSA/MD5/ECDSA and demo mock PQC envelope.",
+      "mode": "workflow",
+      "status": "COMPLETED",
+      "started_at": "2026-06-02T14:53:16.888932+00:00",
+      "completed_at": "2026-06-02T14:53:17.037228+00:00",
+      "output": {
+        "workflow_id": "d1f736ed-b293-459d-a873-0463b467036b",
+        "workflow_name": "crypto_migration_assessment",
+        "status": "COMPLETED",
+        "recommendation": "Migrate asymmetric crypto to ML-KEM / ML-DSA when liboqs is enabled. Current risk: high.",
+        "final_job_id": "job_08c1479a-495d-4170-811a-b9e938a06a35",
+        "final_result": {
+          "migration": {
+            "findings": [
+              {
+                "pattern": "RSA",
+                "suggestion": "Consider ML-KEM or Kyber for key exchange"
+              },
+              {
+                "pattern": "MD5",
+                "suggestion": "Replace with SHA-256 or BLAKE2"
+              }
+            ],
+            "risk_level": "high",
+            "recommendation": "Migrate to NIST PQC algorithms when liboqs is configured"
+          },
+          "skill_scan": {
+            "provider": "mock_provider",
+            "mock": true,
+            "counts": {
+              "00": 512,
+              "11": 512
+            },
+            "skill": {
+              "skill": "crypto_migration_scan",
+              "findings": [
+                {
+                  "pattern": "RSA",
+                  "suggestion": "Consider ML-KEM or Kyber for key exchange"
+                },
+                {
+                  "pattern": "MD5",
+                  "suggestion": "Replace with SHA-256 or BLAKE2"
+                }
+              ],
+              "risk_level": "high",
+              "recommendation": "Migrate to NIST PQC algorithms when liboqs is configured"
+            }
+          }
+        },
+        "steps": [
+          {
+            "step_id": "0e056406",
+            "agent": "CryptoMigrationAgent",
+            "status": "completed",
+            "summary": "2 findings",
+            "output": {
+              "findings": [
+                {
+                  "pattern": "RSA",
+                  "suggestion": "Consider ML-KEM or Kyber for key exchange"
+                },
+                {
+                  "pattern": "MD5",
+                  "suggestion": "Replace with SHA-256 or BLAKE2"
+                }
+              ],
+              "risk_level": "high",
+              "recommendation": "Migrate to NIST PQC algorithms when liboqs is configured"
+            }
+          },
+          {
+            "step_id": "4a295160",
+            "agent": "JobExecutor",
+            "status": "completed",
+            "summary": "Skill scan completed",
+            "output": {
+              "provider": "mock_provider",
+              "mock": true,
+              "counts": {
+                "00": 512,
+                "11": 512
+              },
+              "skill": {
+                "skill": "crypto_migration_scan",
+                "findings": [
+                  {
+                    "pattern": "RSA",
+                    "suggestion": "Consider ML-KEM or Kyber for key exchange"
+                  },
+                  {
+                    "pattern": "MD5",
+                    "suggestion": "Replace with SHA-256 or BLAKE2"
+                  }
+                ],
+                "risk_level": "high",
+                "recommendation": "Migrate to NIST PQC algorithms when liboqs is configured"
+              }
+            }
+          },
+          {
+            "step_id": "5874bab2",
+            "agent": "JobExecutor",
+            "status": "completed",
+            "summary": "Mock PQC encrypt demo (non-production)",
+            "output": {
+              "provider": "mock_provider",
+              "mock": true,
+              "counts": {
+                "00": 512,
+                "11": 512
+              },
+              "skill": {
+                "skill": "pqc_encryptor",
+                "encrypted": {
+                  "ciphertext": "Z0FBQUFBQnFIdTVkcUkwZW83TUJCenJIcWt4XzdiWWxHcVRTYk13UEx3S3VhYVlDcmZkUnlmekVlM2oyVDlZNTk4VnlnaEFWOGRndUpmX283QUVCT1VoaDFMbW40dDk1M1lzS1o3aXdPVnpYdXRqYWVDOW9lb1k9",
+                  "algorithm": "mock_fernet_demo",
+                  "warning": "MOCK_PQC_NON_PRODUCTION \u2014 not NIST-certified post-quantum cryptography"
+                }
+              }
+            }
+          },
+          {
+            "step_id": "96114043",
+            "agent": "SecurityPolicyAgent",
+            "status": "completed",
+            "summary": "Restricted-data policy check",
+            "output": {
+              "allowed": true,
+              "reason": "Job complies with default policy",
+              "policy_version": "0.1.0"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "use_case_id": "telecom_qkd_link_planning",
+      "industry": "Telecommunications",
+      "title": "Metro fiber QKD link simulation (BB84)",
+      "problem": "Estimate sifted key rate for a 40 km metropolitan QKD pilot using BB84 protocol modeling.",
+      "quantum_value": "Quantum key distribution provides information-theoretic key agreement; simulation validates link budgets before hardware spend.",
+      "mode": "job",
+      "status": "COMPLETED",
+      "started_at": "2026-06-02T14:53:17.037228+00:00",
+      "completed_at": "2026-06-02T14:53:17.062158+00:00",
+      "output": {
+        "job_id": "job_e04a4ee1-3c74-48b8-b08c-b33fe2e36777",
+        "state": "COMPLETED",
+        "selected_provider": "mock_provider",
+        "result": {
+          "provider": "mock_provider",
+          "mock": true,
+          "counts": {
+            "00": 512,
+            "11": 512
+          },
+          "skill": {
+            "skill": "bb84_simulator",
+            "alice_bits_sample": [
+              0,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "sifted_key_length_estimate": 1999,
+            "note": "Educational simulation only \u2014 not real QKD"
+          }
+        },
+        "error": null
+      }
+    },
+    {
+      "use_case_id": "cloud_api_entropy",
+      "industry": "Cloud / Security",
+      "title": "High-entropy API session nonce generation",
+      "problem": "Generate 32 bytes of entropy for distributed API gateway session binding.",
+      "quantum_value": "QRNG hardware delivers true randomness; demo uses CSPRNG with skill path to real QRNG providers in production.",
+      "mode": "job",
+      "status": "COMPLETED",
+      "started_at": "2026-06-02T14:53:17.062158+00:00",
+      "completed_at": "2026-06-02T14:53:17.101379+00:00",
+      "output": {
+        "job_id": "job_c480f2da-43e0-42e3-958c-eb784d995759",
+        "state": "COMPLETED",
+        "selected_provider": "mock_provider",
+        "result": {
+          "provider": "mock_provider",
+          "mock": true,
+          "counts": {
+            "00": 512,
+            "11": 512
+          },
+          "skill": {
+            "skill": "qrng_demo",
+            "random_hex": "26617408696621ba203626d8253db2260025649505205137e1a14eceb9c42b27",
+            "bits": 256,
+            "note": "Demo uses OS CSPRNG; connect real QRNG hardware for production"
+          }
+        },
+        "error": null
+      }
+    },
+    {
+      "use_case_id": "automotive_battery_chemistry",
+      "industry": "Automotive / Energy",
+      "title": "Li-ion cathode simulation proxy (2-qubit model)",
+      "problem": "Sample magnetic observables for a simplified 2-site Hubbard-style battery cathode model before full VQE.",
+      "quantum_value": "Quantum chemistry on near-term devices targets reaction energies; circuit simulation validates encoding before hardware.",
+      "mode": "job",
+      "status": "COMPLETED",
+      "started_at": "2026-06-02T14:53:17.101379+00:00",
+      "completed_at": "2026-06-02T14:53:17.118429+00:00",
+      "output": {
+        "job_id": "job_f811582b-d781-44fb-9f24-664413450996",
+        "state": "COMPLETED",
+        "selected_provider": "mock_provider",
+        "result": {
+          "provider": "mock_provider",
+          "mock": true,
+          "counts": {
+            "00": 512,
+            "11": 512
+          },
+          "skill": {
+            "skill": "hello_quantum",
+            "message": "Hello from QuantumOS",
+            "qubits": 2,
+            "shots": 2048,
+            "circuit": "H on all qubits, then measure"
+          }
+        },
+        "error": null
+      }
+    },
+    {
+      "use_case_id": "research_simulator_benchmark",
+      "industry": "Research / R&D",
+      "title": "Cross-provider quantum simulator benchmark",
+      "problem": "Compare Qiskit Aer, PennyLane, mock, and classical fallback on identical 2-qubit workload.",
+      "quantum_value": "Provider benchmarking de-risks vendor selection for production quantum workloads.",
+      "mode": "workflow",
+      "status": "COMPLETED",
+      "started_at": "2026-06-02T14:53:17.118429+00:00",
+      "completed_at": "2026-06-02T14:53:17.198110+00:00",
+      "output": {
+        "workflow_id": "f26c5fbe-d735-45db-88d1-e65f9423f196",
+        "workflow_name": "research_benchmark",
+        "status": "COMPLETED",
+        "recommendation": "Recommended default: mock_provider",
+        "final_job_id": null,
+        "final_result": {
+          "benchmarks": [
+            {
+              "provider": "qiskit_aer",
+              "state": "COMPLETED",
+              "result_preview": "{'provider': 'mock_provider', 'mock': True, 'counts': {'00': 512, '11': 512}, 'skill': {'skill': 'hello_quantum', 'messa"
+            },
+            {
+              "provider": "pennylane_default_qubit",
+              "state": "COMPLETED",
+              "result_preview": "{'provider': 'mock_provider', 'mock': True, 'counts': {'00': 512, '11': 512}, 'skill': {'skill': 'hello_quantum', 'messa"
+            },
+            {
+              "provider": "mock_provider",
+              "state": "COMPLETED",
+              "result_preview": "{'provider': 'mock_provider', 'mock': True, 'counts': {'00': 512, '11': 512}, 'skill': {'skill': 'hello_quantum', 'messa"
+            },
+            {
+              "provider": "classical_local",
+              "state": "COMPLETED",
+              "result_preview": "{'provider': 'classical_local', 'message': 'Classical fallback executed', 'skill': {'skill': 'hello_quantum', 'message':"
+            }
+          ]
+        },
+        "steps": [
+          {
+            "step_id": "02c29752",
+            "agent": "JobExecutor",
+            "status": "completed",
+            "summary": "Benchmark qiskit_aer: COMPLETED",
+            "output": {
+              "job_id": "job_94af193d-f39d-483f-8aed-0f46aad3f36a",
+              "state": "COMPLETED",
+              "selected_provider": "mock_provider",
+              "result": {
+                "provider": "mock_provider",
+                "mock": true,
+                "counts": {
+                  "00": 512,
+                  "11": 512
+                },
+                "skill": {
+                  "skill": "hello_quantum",
+                  "message": "Hello from QuantumOS",
+                  "qubits": 2,
+                  "shots": 512,
+                  "circuit": "H on all qubits, then measure"
+                }
+              },
+              "error": null
+            }
+          },
+          {
+            "step_id": "60e83e50",
+            "agent": "JobExecutor",
+            "status": "completed",
+            "summary": "Benchmark pennylane_default_qubit: COMPLETED",
+            "output": {
+              "job_id": "job_68305261-1415-4da8-9e7e-8fe33cdd9e5e",
+              "state": "COMPLETED",
+              "selected_provider": "mock_provider",
+              "result": {
+                "provider": "mock_provider",
+                "mock": true,
+                "counts": {
+                  "00": 512,
+                  "11": 512
+                },
+                "skill": {
+                  "skill": "hello_quantum",
+                  "message": "Hello from QuantumOS",
+                  "qubits": 2,
+                  "shots": 512,
+                  "circuit": "H on all qubits, then measure"
+                }
+              },
+              "error": null
+            }
+          },
+          {
+            "step_id": "c410ce92",
+            "agent": "JobExecutor",
+            "status": "completed",
+            "summary": "Benchmark mock_provider: COMPLETED",
+            "output": {
+              "job_id": "job_6692b116-feaf-480d-9941-3c60f7300681",
+              "state": "COMPLETED",
+              "selected_provider": "mock_provider",
+              "result": {
+                "provider": "mock_provider",
+                "mock": true,
+                "counts": {
+                  "00": 512,
+                  "11": 512
+                },
+                "skill": {
+                  "skill": "hello_quantum",
+                  "message": "Hello from QuantumOS",
+                  "qubits": 2,
+                  "shots": 512,
+                  "circuit": "H on all qubits, then measure"
+                }
+              },
+              "error": null
+            }
+          },
+          {
+            "step_id": "9aa587cf",
+            "agent": "JobExecutor",
+            "status": "completed",
+            "summary": "Benchmark classical_local: COMPLETED",
+            "output": {
+              "job_id": "job_26819795-ce63-433a-97d0-2993cead20bf",
+              "state": "COMPLETED",
+              "selected_provider": "classical_local",
+              "result": {
+                "provider": "classical_local",
+                "message": "Classical fallback executed",
+                "skill": {
+                  "skill": "hello_quantum",
+                  "message": "Hello from QuantumOS",
+                  "qubits": 2,
+                  "shots": 512,
+                  "circuit": "H on all qubits, then measure"
+                }
+              },
+              "error": null
+            }
+          },
+          {
+            "step_id": "491686aa",
+            "agent": "BackendSelectionAgent",
+            "status": "completed",
+            "summary": "Post-benchmark recommendation",
+            "output": {
+              "recommended_provider": "mock_provider",
+              "reason": "Cloud execution is not allowed and local provider supports this job type."
+            }
+          }
+        ]
+      }
+    },
+    {
+      "use_case_id": "insurance_fraud_feature_probe",
+      "industry": "Insurance",
+      "title": "Secure fraud-scoring circuit with policy gate",
+      "problem": "Run a supervised fraud feature circuit after scanning feature-store code for weak crypto.",
+      "quantum_value": "Hybrid quantum classifiers are researched for high-dimensional fraud; pipeline enforces policy before execution.",
+      "mode": "workflow",
+      "status": "COMPLETED",
+      "started_at": "2026-06-02T14:53:17.198110+00:00",
+      "completed_at": "2026-06-02T14:53:17.218826+00:00",
+      "output": {
+        "workflow_id": "d87036ac-d900-45d2-af0c-e6db6d4e7e5b",
+        "workflow_name": "secure_circuit_pipeline",
+        "status": "COMPLETED",
+        "recommendation": "Cloud execution is not allowed and local provider supports this job type.",
+        "final_job_id": "job_2a5e5551-e85d-45fa-a66f-31ce1948f6c7",
+        "final_result": {
+          "provider": "mock_provider",
+          "mock": true,
+          "counts": {
+            "00": 512,
+            "11": 512
+          },
+          "skill": {
+            "skill": "hello_quantum",
+            "message": "Hello from QuantumOS",
+            "qubits": 2,
+            "shots": 1024,
+            "circuit": "H on all qubits, then measure"
+          }
+        },
+        "steps": [
+          {
+            "step_id": "e8076f6c",
+            "agent": "CryptoMigrationAgent",
+            "status": "completed",
+            "summary": "Risk: high",
+            "output": {
+              "findings": [
+                {
+                  "pattern": "RSA",
+                  "suggestion": "Consider ML-KEM or Kyber for key exchange"
+                },
+                {
+                  "pattern": "MD5",
+                  "suggestion": "Replace with SHA-256 or BLAKE2"
+                }
+              ],
+              "risk_level": "high",
+              "recommendation": "Migrate to NIST PQC algorithms when liboqs is configured"
+            }
+          },
+          {
+            "step_id": "de691ae2",
+            "agent": "CircuitGenerationAgent",
+            "status": "completed",
+            "summary": "2-qubit superposition with measurement",
+            "output": {
+              "circuit_description": "2-qubit superposition with measurement",
+              "gates": [
+                "h",
+                "h",
+                "measure",
+                "measure"
+              ],
+              "qubits": 2,
+              "recommended_provider": "qiskit_aer"
+            }
+          },
+          {
+            "step_id": "2d38355b",
+            "agent": "SecurityPolicyAgent",
+            "status": "completed",
+            "summary": "Circuit execution approved",
+            "output": {
+              "allowed": true,
+              "reason": "Job complies with default policy",
+              "policy_version": "0.1.0"
+            }
+          },
+          {
+            "step_id": "a517bd61",
+            "agent": "BackendSelectionAgent",
+            "status": "completed",
+            "summary": "Simulator: mock_provider",
+            "output": {
+              "recommended_provider": "mock_provider",
+              "reason": "Cloud execution is not allowed and local provider supports this job type."
+            }
+          },
+          {
+            "step_id": "3f420743",
+            "agent": "JobExecutor",
+            "status": "completed",
+            "summary": "Circuit job COMPLETED on mock_provider",
+            "output": {
+              "job_id": "job_2a5e5551-e85d-45fa-a66f-31ce1948f6c7",
+              "state": "COMPLETED",
+              "selected_provider": "mock_provider",
+              "result": {
+                "provider": "mock_provider",
+                "mock": true,
+                "counts": {
+                  "00": 512,
+                  "11": 512
+                },
+                "skill": {
+                  "skill": "hello_quantum",
+                  "message": "Hello from QuantumOS",
+                  "qubits": 2,
+                  "shots": 1024,
+                  "circuit": "H on all qubits, then measure"
+                }
+              },
+              "error": null
+            }
+          },
+          {
+            "step_id": "368c962a",
+            "agent": "ExplanationAgent",
+            "status": "completed",
+            "summary": "The quantum simulator measured the circuit many times. The count distribution shows how often each bitstring appeared.",
+            "output": {
+              "explanation": "The quantum simulator measured the circuit many times. The count distribution shows how often each bitstring appeared.",
+              "state": "COMPLETED"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

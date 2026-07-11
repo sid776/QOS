@@ -1,0 +1,1 @@
+{"code": "from Crypto.PublicKey import RSA\nhash = MD5.new(data)\ncurve = ECDSA.sign(msg)"}

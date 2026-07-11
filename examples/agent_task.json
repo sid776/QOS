@@ -1,0 +1,7 @@
+{
+  "job_type": "optimization",
+  "constraints": {
+    "max_cost_usd": 0,
+    "allow_cloud_quantum": false
+  }
+}

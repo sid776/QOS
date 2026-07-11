@@ -1,0 +1,8 @@
+{
+  "name": "quantumos-monorepo",
+  "private": true,
+  "scripts": {
+    "dashboard:dev": "npm run dev --prefix apps/dashboard",
+    "dashboard:build": "npm run build --prefix apps/dashboard"
+  }
+}
