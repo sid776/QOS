@@ -1,5 +1,5 @@
-# Default service config when Railway builds from repo root (API).
-# For the dashboard, create a second Railway service and set Dockerfile path to Dockerfile.dashboard
+# Default: single QOS service (embedded Postgres when DATABASE_URL unset).
+# For dedicated Postgres: deploy docker-compose.railway.yml instead.
 
 [build]
 builder = "dockerfile"
@@ -10,7 +10,8 @@ healthcheckPath = "/health"
 healthcheckTimeout = 300
 restartPolicyType = "on_failure"
 
-# Required variables on the QOS service (set in Railway dashboard):
-#   DATABASE_URL = ${{Postgres.DATABASE_URL}}   (reference from Postgres plugin)
+# Do NOT set DATABASE_URL to ${{Postgres.DATABASE_URL}} unless a Postgres plugin exists.
+# Optional plain variables:
 #   QUANTUMOS_ENV = production
 #   DEFAULT_TENANT_ID = tenant_demo
+# Recommended volume mount: /data/postgres (embedded Postgres persistence)

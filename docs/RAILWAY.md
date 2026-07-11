@@ -1,72 +1,63 @@
 # Deploy QuantumOS on Railway
 
-Repo: [github.com/sid776/QOS](https://github.com/sid776/QOS)
+## Two deployment options
 
-## Why the deploy failed
-
-The API defaults to `localhost:5432` when **`DATABASE_URL` is missing**. On Railway there is no Postgres on localhost — you must add a Railway PostgreSQL database and **reference its `DATABASE_URL`** on the QOS service.
-
-## Fix (existing Railway project) — 2 minutes
-
-### Step 1 — Add PostgreSQL
-
-1. Open your Railway project
-2. Click **+ New** → **Database** → **Add PostgreSQL**
-3. Wait until Postgres shows **Active**
-
-### Step 2 — Link DATABASE_URL to QOS
-
-1. Click your **QOS** (API) service (not Postgres)
-2. Go to **Variables**
-3. Click **+ New Variable** → **Add Reference**
-4. Select the **Postgres** service → **`DATABASE_URL`**
-5. Confirm the variable appears as `DATABASE_URL` (value hidden)
-
-Also add (plain values):
-
-| Variable | Value |
-|----------|--------|
-| `QUANTUMOS_ENV` | `production` |
-| `DEFAULT_TENANT_ID` | `tenant_demo` |
-
-### Step 3 — Redeploy
-
-1. QOS service → **Deployments** → **Redeploy**
-2. Check logs — you should see `Database ready`
-3. Open `https://YOUR-API-DOMAIN/health` — expect `"database": "connected"`
+| Mode | Postgres | DATABASE_URL | Best for |
+|------|----------|--------------|----------|
+| **A — Single QOS service** (default Dockerfile) | Embedded in container | Auto-set by entrypoint | Fastest fix, one Railway service |
+| **B — Docker Compose** (recommended prod) | Dedicated `postgres` service | Set in compose file | Persistent DB, separate scaling |
 
 ---
 
-## Fresh deploy (template with Postgres included)
+## Option A — Single QOS service (works immediately)
 
-Use the included template so Postgres + `DATABASE_URL` are wired automatically:
+The root `Dockerfile` includes PostgreSQL. If `DATABASE_URL` is **not** set, the entrypoint **starts embedded Postgres** and exports:
 
-1. Railway → **New Project** → **Deploy a template** (or import `railway.template.json`)
-2. Or manually create two services from [railway.template.json](./railway.template.json):
-   - **Postgres** — database plugin
-   - **QOS** — GitHub repo, Dockerfile `Dockerfile`, variable `DATABASE_URL=${{Postgres.DATABASE_URL}}`
+```
+postgresql://quantumos:quantumos@127.0.0.1:5432/quantumos
+```
+
+### Railway steps
+
+1. Deploy from GitHub repo `sid776/QOS` (Dockerfile at root).
+2. **Do not** set `DATABASE_URL` unless you have an external Postgres.
+3. **Optional but recommended:** attach a Railway **Volume** mounted at `/data/postgres` so data survives redeploys.
+4. Redeploy → check logs for `Embedded PostgreSQL ready`.
+5. Verify: `GET /health` → `"database": "connected"`.
+
+> Remove any broken `${{Postgres.DATABASE_URL}}` variable reference from the QOS service — it fails when no Postgres plugin exists.
 
 ---
 
-## Architecture
+## Option B — Docker Compose (dedicated Postgres)
 
-| Service | Dockerfile | Notes |
-|---------|------------|--------|
-| **QOS (API)** | `Dockerfile` | Requires `DATABASE_URL` on Railway |
-| **Postgres** | Railway plugin | Auto-provisioned |
-| **Dashboard** | `Dockerfile.dashboard` | Set `VITE_API_URL` to API public URL |
+File: [`docker-compose.railway.yml`](./docker-compose.railway.yml)
 
-## Dashboard (optional second service)
+Creates two services with `DATABASE_URL` wired internally — **no reference variables**.
+
+### Railway steps
+
+1. Project → **Settings** → **Deploy** → enable **Docker Compose**
+2. Compose file: `docker-compose.railway.yml`
+3. Redeploy — Railway creates **postgres** + **qos** services
+4. Generate a public domain on the **qos** service
+5. Verify: `GET /health` on qos domain
+
+---
+
+## Dashboard (optional third service)
 
 1. **+ New** → same GitHub repo
 2. Dockerfile path: `Dockerfile.dashboard`
-3. Variable: `VITE_API_URL=https://YOUR-API-DOMAIN.railway.app`
-4. Generate public domain → redeploy
+3. Variable: `VITE_API_URL=https://YOUR-QOS-DOMAIN.railway.app`
+4. Generate domain → redeploy dashboard
+
+---
 
 ## Verify
 
 ```bash
-curl https://YOUR-API-DOMAIN/health
+curl https://YOUR-QOS-DOMAIN.railway.app/health
 ```
 
 Expected:
@@ -79,20 +70,22 @@ Expected:
 }
 ```
 
+---
+
 ## Troubleshooting
 
 | Symptom | Fix |
 |---------|-----|
-| Crash: `connection refused localhost:5432` | `DATABASE_URL` not set — follow Step 2 above |
-| `"database": "pending"` in /health | Postgres still starting; wait 1–2 min or redeploy |
-| Entrypoint error about DATABASE_URL | Add Postgres reference variable, redeploy |
-| Use cases work but jobs fail | DB not connected yet — check /health |
+| Entrypoint exits immediately | Pull latest `main` — old entrypoint required DATABASE_URL |
+| `${{Postgres.DATABASE_URL}}` unresolved | Delete that variable OR add Postgres plugin OR use Option A/B above |
+| `"database": "pending"` | Wait 60s for Postgres init; check deploy logs |
+| Data lost on redeploy (Option A) | Mount Railway volume at `/data/postgres` |
 
-## Local Docker (includes Postgres)
+## Local development
 
 ```bash
 cp .env.example .env
 docker compose up --build
 ```
 
-Uses internal hostname `postgres` — no manual `DATABASE_URL` needed locally.
+Uses `docker-compose.yml` with separate postgres + api + dashboard.

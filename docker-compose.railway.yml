@@ -1,0 +1,36 @@
+# Railway / production — Postgres + QOS API (recommended)
+# Deploy: Railway project -> Settings -> Deploy -> Docker Compose file -> docker-compose.railway.yml
+# DATABASE_URL is set automatically — no ${{Postgres.DATABASE_URL}} reference needed.
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: quantumos
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-quantumos}
+      POSTGRES_DB: quantumos
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U quantumos -d quantumos"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    restart: unless-stopped
+
+  qos:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      DATABASE_URL: postgresql://quantumos:${POSTGRES_PASSWORD:-quantumos}@postgres:5432/quantumos
+      QUANTUMOS_ENV: production
+      DEFAULT_TENANT_ID: tenant_demo
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  postgres_data:

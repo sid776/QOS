@@ -1,6 +1,6 @@
 {
   "name": "QuantumOS",
-  "description": "QuantumOS API + PostgreSQL — agentic quantum operating layer",
+  "description": "QuantumOS API with PostgreSQL — no manual DATABASE_URL wiring required",
   "services": {
     "QOS": {
       "source": {
@@ -12,13 +12,9 @@
         "dockerfilePath": "Dockerfile"
       },
       "variables": {
-        "DATABASE_URL": "${{Postgres.DATABASE_URL}}",
         "QUANTUMOS_ENV": "production",
         "DEFAULT_TENANT_ID": "tenant_demo"
       }
-    },
-    "Postgres": {
-      "image": "ghcr.io/railwayapp-templates/postgres-ssl:16"
     }
   }
 }

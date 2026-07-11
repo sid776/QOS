@@ -38,8 +38,8 @@ def init_database(max_wait_seconds: int = 120, retry_interval: float = 2.0) -> b
     url = _normalize_database_url()
     if not url:
         _db_error = (
-            "DATABASE_URL is not set. On Railway: add a PostgreSQL database, then on the QOS "
-            "service set DATABASE_URL to ${{Postgres.DATABASE_URL}} (reference variable)."
+            "DATABASE_URL is not set and embedded PostgreSQL did not start. "
+            "Check container logs, or set DATABASE_URL / deploy docker-compose.railway.yml."
         )
         logger.error(_db_error)
         return False
