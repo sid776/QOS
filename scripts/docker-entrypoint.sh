@@ -3,7 +3,12 @@ set -e
 
 PORT="${PORT:-8000}"
 PGDATA="${PGDATA:-/data/postgres}"
-export PATH="/usr/lib/postgresql/15/bin:$PATH"
+
+# Resolve the installed PostgreSQL bin dir (version-agnostic) and add to PATH.
+PG_BIN_DIR="$(ls -d /usr/lib/postgresql/*/bin 2>/dev/null | sort -V | tail -n 1)"
+if [ -n "$PG_BIN_DIR" ]; then
+  export PATH="$PG_BIN_DIR:$PATH"
+fi
 
 start_embedded_postgres() {
   echo "============================================================"
