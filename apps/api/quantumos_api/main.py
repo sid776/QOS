@@ -17,6 +17,7 @@ from apps.api.quantumos_api.routers import (
     docs,
 )
 from db.bootstrap import init_database
+from apps.api.quantumos_api.dashboard_static import mount_dashboard
 
 logger = logging.getLogger("quantumos.api")
 
@@ -37,9 +38,12 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="QuantumOS API",
+    title="QuantumOS",
     version="0.1.0",
     lifespan=lifespan,
+    docs_url="/swagger",
+    redoc_url="/redoc",
+    openapi_url="/openapi.json",
 )
 
 app.add_middleware(
@@ -60,3 +64,4 @@ app.include_router(policies.router)
 app.include_router(crypto.router)
 app.include_router(use_cases.router)
 app.include_router(docs.router)
+mount_dashboard(app)

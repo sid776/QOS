@@ -1,6 +1,11 @@
 function resolveApiUrl(): string {
-  if (import.meta.env.VITE_API_URL) {
-    return import.meta.env.VITE_API_URL;
+  const env = import.meta.env.VITE_API_URL as string | undefined;
+  // Bundled Railway/production build: API + UI on same origin
+  if (env === "") {
+    return typeof window !== "undefined" ? window.location.origin : "";
+  }
+  if (env) {
+    return env.replace(/\/$/, "");
   }
   if (typeof window !== "undefined") {
     return `${window.location.protocol}//${window.location.hostname}:8000`;

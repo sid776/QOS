@@ -1,5 +1,21 @@
 # Deploy QuantumOS on Railway
 
+## Your full app URL
+
+After deploy, open the **root URL** — not `/v1/docs`:
+
+```
+https://qos-production.up.railway.app/
+```
+
+You get the full QuantumOS dashboard (Industry Apps, Skills, Jobs, etc.) — same as local `npm run dev`.
+
+The API lives on the same domain under `/v1/*` and `/health`.
+
+Swagger (optional): `/swagger` — not `/docs` (that's the in-app docs page).
+
+---
+
 ## Two deployment options
 
 | Mode | Postgres | DATABASE_URL | Best for |
