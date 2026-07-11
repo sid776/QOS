@@ -26,7 +26,6 @@ RUN chmod +x /entrypoint.sh \
 
 ENV PYTHONPATH=/app
 ENV PGDATA=/data/postgres
-ENV PATH="/usr/lib/postgresql/15/bin:${PATH}"
 EXPOSE 8000
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=90s --retries=5 \
