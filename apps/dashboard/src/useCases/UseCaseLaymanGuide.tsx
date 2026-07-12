@@ -50,7 +50,7 @@ export default function UseCaseLaymanGuide({ useCaseId, inputFields, compact }: 
       {!compact && (
         <>
           <div className="rounded-xl border border-violet-200 bg-violet-50 p-4">
-            <p className="text-xs font-bold uppercase text-violet-800 mb-1">What makes this different</p>
+            <p className="text-xs font-bold uppercase text-violet-800 mb-1">Notes</p>
             <p className="text-sm text-violet-950 leading-relaxed">{guide.innovation}</p>
           </div>
 

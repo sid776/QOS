@@ -6,7 +6,7 @@ const TOC = [
   { id: "big-picture", label: "The big picture (end to end)" },
   { id: "interface", label: "Your screen: header, sidebar, online light" },
   { id: "desktop", label: "Desktop (Home)" },
-  { id: "use-cases", label: "Use Cases — 8 industry stories" },
+  { id: "use-cases", label: "Use Cases — 16 industry scenarios" },
   { id: "skills", label: "Skills — 7 full features" },
   { id: "jobs", label: "Jobs — history & results" },
   { id: "workbench", label: "Agent Workbench — multi-step pipelines" },
@@ -89,10 +89,22 @@ export default function FullUserGuide() {
         </GuideP>
         <GuideH3>What you can do here</GuideH3>
         <GuideUl>
-          <li>Run <strong>industry stories</strong> (Use Cases) — portfolio planning, delivery routes, bank security audits, and more.</li>
-          <li>Use <strong>Skills</strong> — seven interactive tools with forms, charts, and tables.</li>
-          <li>Watch <strong>multi-step agent pipelines</strong> (Agent Workbench) make decisions step by step.</li>
-          <li>Inspect <strong>jobs</strong>, <strong>providers</strong>, <strong>security tools</strong>, and an <strong>audit log</strong>.</li>
+          <li>
+            Run <strong>Industry Apps</strong> — sixteen scenarios with forms, charts, and
+            before/after comparisons.
+          </li>
+          <li>
+            Use <strong>Skills</strong> — smaller tools (QRNG, BB84, portfolio optimizer, account
+            vault, etc.) with their own result views.
+          </li>
+          <li>
+            Watch <strong>agent pipelines</strong> in the Workbench — policy, routing, and skills
+            chained together.
+          </li>
+          <li>
+            Inspect <strong>jobs</strong>, <strong>providers</strong>, security tools, and the{" "}
+            <strong>audit log</strong>.
+          </li>
         </GuideUl>
         <GuideH3>What you do not need</GuideH3>
         <GuideUl>
@@ -201,53 +213,83 @@ export default function FullUserGuide() {
       </GuideSection>
 
       {/* 5 Use Cases */}
-      <GuideSection id="use-cases" title="5. Use Cases — 8 industry stories" icon="🌐" accent="emerald" defaultOpen={false}>
+      <GuideSection id="use-cases" title="5. Use Cases — 16 industry scenarios" icon="🌐" accent="emerald" defaultOpen={false}>
         <GuideP>
-          <Link to="/use-cases" className="q-link">Use Cases</Link> package quantum ideas into
-          familiar business language. Click a colored card to expand it, then press{" "}
-          <strong>Run this scenario</strong>. Wait for a green <strong>COMPLETED</strong> badge.
+          <Link to="/use-cases" className="q-link">Industry Apps</Link> are full walkthroughs: you
+          fill in a form, run Analyze, see charts and numbers, then a comparison to a simpler
+          traditional approach at the bottom. Pick a card, open the app, and follow the steps
+          (Understand → Inputs → Review → Analyze → Results).
         </GuideP>
-        <GuideH3>All eight scenarios</GuideH3>
+        <GuideH3>All sixteen apps (short descriptions)</GuideH3>
         <GuideUl>
           <li>
-            <strong>Fintech — Multi-asset portfolio rebalance</strong> — Allocates $2.5M across tech
-            stocks under medium risk. Runs a full <em>agent workflow</em> (policy → optimization →
-            backend pick → portfolio skill → explanation).
+            <strong>Portfolio rebalance</strong> — Spread a budget across tech stocks with a
+            risk-aware optimizer instead of equal weighting.
           </li>
           <li>
-            <strong>Logistics — Last-mile delivery stop ordering</strong> — Optimizes visit order
-            for eight stops from a warehouse. Uses the <code>route_optimizer</code> skill.
+            <strong>Delivery routing</strong> — Reorder warehouse stops to cut total km vs driving
+            in the order you typed them.
           </li>
           <li>
-            <strong>Banking — Legacy PQC migration assessment</strong> — Scans synthetic payment
-            code for RSA, MD5, SHA-1. Workflow: crypto scan → migration skill → mock PQC → policy
-            review.
+            <strong>Bank crypto audit</strong> — Scan payment code for RSA/MD5 and related weak
+            patterns; get a migration-style report.
           </li>
           <li>
-            <strong>Telecom — Metro fiber QKD (BB84)</strong> — Simulates quantum key distribution
-            for a 40 km link. Uses <code>bb84_simulator</code>; shows sifted key length and error
-            rate.
+            <strong>QKD link planning</strong> — Simulate BB84 on a fiber link: key rate, QBER,
+            sifted key preview.
           </li>
           <li>
-            <strong>Cloud — High-entropy API session nonce</strong> — Generates 32 random bytes for
-            session security. Great first click — fast and visual. Uses <code>qrng_demo</code>.
+            <strong>NIST account vault</strong> — QRNG nonce + ML-KEM / AES-GCM / ML-DSA account
+            encryption (the post-quantum identity demo).
           </li>
           <li>
-            <strong>Automotive — Battery chemistry proxy</strong> — 2-qubit circuit simulation
-            stand-in for materials research. Uses <code>hello_quantum</code>.
+            <strong>Battery chemistry</strong> — Small quantum circuit proxy for cathode material
+            research with gate list and histogram.
           </li>
           <li>
-            <strong>Research — Cross-provider benchmark</strong> — Same circuit on Qiskit, PennyLane,
-            mock, and classical backends; compares outcomes. Agent workflow.
+            <strong>Simulator benchmark</strong> — Same circuit on Qiskit, PennyLane, mock, and
+            classical backends; compare agreement.
           </li>
           <li>
-            <strong>Insurance — Secure fraud-scoring circuit</strong> — Scans feature-store code for
-            weak crypto, then runs a circuit under policy gate. Multi-step workflow.
+            <strong>Insurance fraud pipeline</strong> — Crypto scan on feature-store code, policy
+            gate, then simulate only if allowed.
+          </li>
+          <li>
+            <strong>Drug binding (VQE)</strong> — Classical docking vs VQE-style binding estimate on
+            one compound and target.
+          </li>
+          <li>
+            <strong>Grid dispatch</strong> — Greedy power dispatch vs optimizer when renewables are a
+            large share of the mix.
+          </li>
+          <li>
+            <strong>Monte Carlo / VaR</strong> — Classical risk paths vs quantum amplitude
+            estimation proxy on the same trading book inputs.
+          </li>
+          <li>
+            <strong>Fab yield</strong> — SPC baseline vs quantum-kernel anomaly detection for inline
+            metrology story.
+          </li>
+          <li>
+            <strong>Quantum RAG</strong> — Vector search recall and latency on a large corpus vs
+            classical ANN-style search.
+          </li>
+          <li>
+            <strong>Protein folding</strong> — VQE folding proxy when no PDB template exists.
+          </li>
+          <li>
+            <strong>Wallet hardening</strong> — Post-quantum vault for crypto wallets; ECDSA
+            migration framing.
+          </li>
+          <li>
+            <strong>City traffic</strong> — Fixed signal timing vs coordinated optimization across
+            many intersections.
           </li>
         </GuideUl>
         <GuideP>
-          After a run, expand <strong>Results</strong> in the panel or follow <strong>View job
-          details</strong> to see the full technical output.
+          Longer plain-English writeups for each app live in the repo{" "}
+          <Link to="/readme" className="q-link">README</Link> and on each app&apos;s Understand
+          step inside the wizard.
         </GuideP>
       </GuideSection>
 

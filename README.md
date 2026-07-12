@@ -1,366 +1,413 @@
 # QuantumOS
 
-**QuantumOS** is the agentic operating layer for quantum-safe and quantum-accelerated software.
+QuantumOS is a developer platform for running quantum simulations, post-quantum security checks, and hybrid “classical + quantum” workflows from one place. There is a web dashboard (Industry Apps, Skills, Jobs), a REST API, and a CLI.
 
-It is a Linux-based developer runtime (not a custom kernel in MVP v1) with API, SDK, CLI, dashboard, quantum job scheduler, backend router, skill registry, policy engine, audit log, and rule-based agents.
+This repo is **not** a new operating system kernel. It runs on normal Linux (or in Docker) and coordinates simulators, optional cloud quantum backends, skills, agents, and an audit log.
 
-## What QuantumOS Is
+**Live demo:** open your deployed URL at `/` for the full dashboard. The API lives on the same host under `/v1/*`. Health check: `/health`.
 
-- Developer runtime for quantum, post-quantum, and hybrid workloads
-- Quantum job scheduler and backend router
-- Quantum-aware agent platform and skill registry
-- Post-quantum security control plane (mock PQC in MVP — see warnings)
-- Dashboard for jobs, providers, policies, and audit logs
+---
 
-## What QuantumOS Is Not
+## Quick start
 
-- Not a replacement for the Linux kernel in MVP
-- Not a custom cryptography invention
-- Not a hacking, wallet-cracking, or bank-access tool
-- Not a guarantee of quantum speedup
-- Not real QKD unless real QKD hardware is integrated
-- Not a certified banking security product without compliance work
-
-## Documentation
-
-| Audience | Where |
-|----------|--------|
-| **Beginners / lay users** | Dashboard → **User Guide** (`/guide`) |
-| **Developers** | Dashboard → **Dev Guide** (`/dev-guide`) or [docs/DEV_GUIDE.md](docs/DEV_GUIDE.md) |
-| **Skills (features & API)** | [How Skills Work](#how-skills-work) below · Dashboard → `/skills` |
-| **Quantum architecture (research)** | Dashboard → **README** → Quantum Research tab, or [docs/QUANTUM_RESEARCH.md](docs/QUANTUM_RESEARCH.md) |
-| **Full README in app** | Dashboard → **README** (`/readme`) |
-
-## Quickstart
-
-### Docker Compose (recommended)
+### Docker (local)
 
 ```bash
 cp .env.example .env
 docker compose up --build
 ```
 
-- API: http://localhost:8000
-- Dashboard: http://localhost:5173
-- Docs: http://localhost:8000/docs
+- Dashboard: http://localhost:5173  
+- API: http://localhost:8000  
+- Swagger: http://localhost:8000/swagger  
 
-### Local development
+### Railway
+
+Push to GitHub and deploy the root `Dockerfile`. The build includes the React dashboard — you get UI + API on one URL. See [docs/RAILWAY.md](docs/RAILWAY.md).
+
+### Local dev (API + dashboard separate)
 
 ```bash
 python -m venv .venv
-source .venv/bin/activate  # Windows: .venv\Scripts\activate
+source .venv/bin/activate   # Windows: .venv\Scripts\activate
 pip install -e ".[dev]"
 
-# Start PostgreSQL (or use docker compose up postgres -d)
 export DATABASE_URL=postgresql://quantumos:quantumos@localhost:5432/quantumos
-
 uvicorn apps.api.quantumos_api.main:app --reload --port 8000
 
-# Dashboard
 cd apps/dashboard && npm install && npm run dev
 ```
 
-### Run tests
+Windows shortcut: `.\scripts\start-local.ps1`
+
+### Tests
 
 ```bash
-pip install -e ".[dev]"
 pytest tests/ -v
 ```
 
-## API Examples
+---
+
+## Industry Apps — what each one is for
+
+These are the sixteen scenarios under **Industry Apps** in the dashboard. Each one walks you through inputs, runs a real pipeline, shows you results, and compares them to a simpler “traditional” approach at the bottom.
+
+None of these replace production systems out of the box. They are working demos with honest baselines — useful for learning, sales engineering, and prototyping.
+
+---
+
+### 1. Multi-asset portfolio rebalance
+
+**Who it’s for:** Anyone allocating money across several stocks or funds — portfolio managers, fintech teams, or students learning asset allocation.
+
+**The situation:** You have a pool of cash (say $2.5M) and five tech stocks. Splitting evenly is easy but usually wrong: some names are more volatile, some move together, and “equal weight” ignores the risk level you actually want.
+
+**What you do:** Enter fund name, budget, tickers, and risk appetite. Hit Analyze.
+
+**What happens:** The app runs a short agent pipeline (policy check → optimizer → backend pick → portfolio skill → plain summary). It searches many possible weight combinations instead of defaulting to 1/N.
+
+**What you get:** A pie chart of weights, dollar amounts per ticker, expected return and volatility, and a comparison showing how much better this is than naïve equal-weighting.
+
+---
+
+### 2. Last-mile delivery routing
+
+**Who it’s for:** Dispatchers, logistics startups, anyone planning multi-stop driving routes.
+
+**The situation:** A driver leaves a warehouse and must hit eight addresses. Order matters. Eight stops means tens of thousands of possible routes; guessing wastes fuel and time.
+
+**What you do:** List your depot and stops, fuel price, and whether the driver returns to the depot.
+
+**What happens:** The app keeps your original stop order as the “before” baseline, then runs a route optimizer to shorten total distance.
+
+**What you get:** A map-style route list, km per leg, total distance, fuel cost estimate, and how much distance you saved versus driving in input order.
+
+---
+
+### 3. Bank legacy crypto audit (PQC migration)
+
+**Who it’s for:** Security engineers at banks or payment companies staring at a post-quantum migration deadline.
+
+**The situation:** Old code still uses RSA, MD5, or weak TLS patterns. Quantum computers won’t break those tomorrow, but regulators and NIST timelines are real. Grep finds strings; it doesn’t give you a migration story.
+
+**What you do:** Paste gateway or payment code, pick a target PQC algorithm and compliance framework.
+
+**What happens:** A structured scan flags weak patterns with severity, suggests fixes, and runs a small encrypt demo with post-quantum-style packaging.
+
+**What you get:** Line-level findings, risk level, recommendation text, and a side-by-side vs “we only ran regex” baseline.
+
+---
+
+### 4. Metro fiber QKD (BB84 link planning)
+
+**Who it’s for:** Telecom engineers evaluating quantum key distribution before buying hardware.
+
+**The situation:** QKD promises keys an eavesdropper can’t copy without being detected — but fiber loss, distance, and error rates decide if a link is worth building. Spreadsheets don’t simulate the protocol.
+
+**What you do:** Enter carrier, city pair, fiber distance, and target key rate.
+
+**What happens:** BB84 is simulated: raw bits, sifting, quantum bit error rate (QBER), sifted key preview.
+
+**What you get:** Alice/Bob style protocol stats, QBER, key length, and comparison to classical pre-shared key approaches.
+
+---
+
+### 5. NIST post-quantum account vault
+
+**Who it’s for:** Identity, platform, or security teams planning CNSA 2.0 / NIST PQC migration for stored accounts.
+
+**The situation:** Accounts encrypted with RSA or predictable session randomness are vulnerable to “harvest now, decrypt later” once large quantum computers exist. NIST finalized ML-KEM and ML-DSA for a reason.
+
+**What you do:** Enter account email, tenant, and compliance target. Run the vault flow.
+
+**What happens:** Step 1 generates a high-entropy session nonce (QRNG demo). Step 2 wraps the account with ML-KEM-768 + AES-256-GCM + ML-DSA-65 (real libraries: kyber-py, dilithium-py).
+
+**What you get:** Entropy spectrum, algorithm stack, KEM ciphertext preview, encrypted payload preview, and compliance notes. Comparison at the bottom vs RSA-style storage.
+
+---
+
+### 6. Battery cathode circuit (automotive chemistry)
+
+**Who it’s for:** Battery R&D teams who want a tangible link between quantum simulation and cell materials — not just slides.
+
+**The situation:** Better EV batteries depend on electron behavior in cathodes. Classical mean-field models are fast but miss correlations; that means wrong predictions and expensive wet-lab iterations.
+
+**What you do:** Pick cathode family (NMC, LFP, etc.), cell format, qubit count, shots.
+
+**What happens:** A small entangled circuit runs on a simulator (stepping stone to full VQE chemistry). Results include gate list and measurement histogram.
+
+**What you get:** Fidelity vs classical mean-field, material context, circuit breakdown, shot counts.
+
+---
+
+### 7. Simulator benchmark (research lab)
+
+**Who it’s for:** Grad students, lab engineers, or anyone choosing between Qiskit, PennyLane, and mock backends.
+
+**The situation:** You need the same circuit on every SDK to compare results. Doing that by hand in four notebooks gets old fast, and silent disagreements between backends have ruined more than one paper.
+
+**What you do:** Set qubits, shots, noise model, cost ceiling.
+
+**What happens:** One workflow hits multiple backends and compares fidelity and timing.
+
+**What you get:** Per-backend previews, recommendation, agreement score, export-friendly summary.
+
+---
+
+### 8. Insurance fraud feature probe (secure pipeline)
+
+**Who it’s for:** Insurers running ML on sensitive features who can’t skip security review.
+
+**The situation:** Fraud models depend on feature-store code that sometimes still imports weak crypto. Running quantum or ML jobs on that data without a gate is a compliance incident waiting to happen.
+
+**What you do:** Paste feature-store code, set PII level and whether to block on critical crypto findings.
+
+**What happens:** Crypto scan → policy agent → quantum simulate (only if allowed) → explanation.
+
+**What you get:** Findings table, approve/block verdict, circuit output if cleared, auditor-friendly narrative.
+
+---
+
+### 9. Drug–target binding (pharma VQE)
+
+**Who it’s for:** Computational chemists and drug-discovery teams comparing classical docking to quantum chemistry proxies.
+
+**The situation:** Classical docking (force fields) is fast but can miss electron effects in the binding pocket. Bad affinity estimates send you down expensive dead-end molecules.
+
+**What you do:** Enter compound name, target protein, VQE settings.
+
+**What happens:** A VQE-style proxy runs vs a classical MM/GBSA baseline on the same inputs.
+
+**What you get:** Binding energy estimates, confidence comparison, conformation search context, measurement histogram.
+
+---
+
+### 10. Renewable grid dispatch
+
+**Who it’s for:** Grid operators and energy researchers juggling solar, wind, storage, and gas.
+
+**The situation:** When renewables dominate, “cheapest plant first” dispatch wastes green power (curtailment) and misses cheaper global schedules. That costs money and carbon.
+
+**What you do:** Configure operator, regions, peak demand, renewable mix, contingency flags.
+
+**What happens:** Classical greedy dispatch vs a quantum-inspired unit commitment optimizer on the same grid inputs.
+
+**What you get:** Cost index, CO₂ intensity, renewable utilization, regional dispatch weights.
+
+---
+
+### 11. Quantum Monte Carlo (trading risk / VaR)
+
+**Who it’s for:** Risk desks measuring Value-at-Risk on derivatives books.
+
+**The situation:** Classical Monte Carlo needs huge numbers of paths for accurate tail risk (VaR99). That’s slow and still noisy on complex books.
+
+**What you do:** Enter book name, notional, horizon, path count.
+
+**What happens:** Classical MC vs quantum amplitude estimation proxy on identical inputs.
+
+**What you get:** VaR numbers, effective paths compared, runtime, regulatory framework context (Basel / FRTB as labels, not certification).
+
+---
+
+### 12. Semiconductor fab yield
+
+**Who it’s for:** Fab engineers watching advanced-node yield and inline metrology.
+
+**The situation:** At 3nm, tiny overlay errors scrap whole batches. Classical SPC often tells you after the damage is done.
+
+**What you do:** Set fab name, process node, yield target, inline metrology flag.
+
+**What happens:** Classical SPC baseline vs a quantum-kernel anomaly detector proxy.
+
+**What you get:** Predicted yield, defect PPM, detection latency, circuit histogram.
+
+---
+
+### 13. Quantum RAG / vector search (LLM retrieval)
+
+**Who it’s for:** Teams building RAG pipelines whose embedding indexes are outgrowing classical ANN search.
+
+**The situation:** At 100M+ vectors, HNSW-style search gets slower and recall drops. Your LLM hallucinates more because retrieval missed the right chunk.
+
+**What you do:** Corpus size, query text, top-K, latency budget.
+
+**What happens:** Classical approximate search vs amplitude-amplification-style retrieval proxy.
+
+**What you get:** Recall@K, latency, vectors examined, similarity circuit context.
+
+---
+
+### 14. Protein folding (genomics / VQE)
+
+**Who it’s for:** Clinicians and bioinformatics folks dealing with variants where no PDB template exists.
+
+**The situation:** Homology modeling needs a similar known structure. For many mutations and orphan proteins, there isn’t one — so classical tools stall.
+
+**What you do:** Protein name, organism, sequence length, disease context.
+
+**What happens:** VQE folding proxy vs homology baseline when template flag is off.
+
+**What you get:** RMSD estimate, folding energy, confidence comparison, circuit output.
+
+---
+
+### 15. Post-quantum wallet hardening
+
+**Who it’s for:** Crypto holders and wallet teams planning ECDSA → PQC migration before Shor’s algorithm threatens secp256k1.
+
+**The situation:** Public addresses leak the curve points attackers will target later. “Harvest now, decrypt later” is already rational for patient adversaries.
+
+**What you do:** Wallet address, chain, holdings value, migration timeline.
+
+**What happens:** Same NIST vault stack as the account app (ML-KEM + AES-GCM + ML-DSA), framed for wallet keys.
+
+**What you get:** Vault package preview, holdings at risk, migration timeline, quantum-safe status.
+
+---
+
+### 16. City-wide traffic optimization
+
+**Who it’s for:** City traffic engineers and mobility researchers tired of fixed signal timers.
+
+**The situation:** Thousands of intersections run on old timing plans. One backup propagates gridlock; idling traffic burns time and fuel.
+
+**What you do:** Metro name, intersection count, peak vehicles, optimize for commute vs emissions vs throughput.
+
+**What happens:** Fixed-timing baseline vs coordinated signal optimization proxy across the network.
+
+**What you get:** Commute time delta, CO₂ comparison, throughput uplift, route/heatmap-style visuals.
+
+---
+
+## Skills (smaller building blocks)
+
+Skills live under `/skills` in the dashboard. They are single-purpose tools (QRNG demo, BB84 sim, portfolio optimizer, etc.) invoked via jobs.
+
+| Skill | What it does |
+|-------|----------------|
+| `hello_quantum` | Bell-state circuit, measurement counts |
+| `qrng_demo` | Random bytes + entropy readout |
+| `bb84_simulator` | BB84 QKD simulation |
+| `portfolio_optimizer` | Weights and USD allocation |
+| `route_optimizer` | TSP-style route |
+| `pqc_encryptor` | Mock encrypt demo (not production PQC) |
+| `crypto_migration_scan` | Weak crypto grep with findings |
+| `account_vault_encrypt` | NIST ML-KEM / ML-DSA account vault |
+
+Run via dashboard, `POST /v1/jobs?wait=true`, or `quantumos run <skill> --input ...`.
+
+See [How skills work](#how-skills-work) below for folder layout and handler contract.
+
+---
+
+## API quick reference
 
 ```bash
-curl http://localhost:8000/health
-curl http://localhost:8000/v1/providers
+curl https://your-host/health
+curl https://your-host/v1/providers
+curl https://your-host/v1/use-cases
 
-curl -X POST http://localhost:8000/v1/jobs \
+curl -X POST "https://your-host/v1/jobs?wait=true" \
   -H "Content-Type: application/json" \
   -d '{"job_type":"circuit_simulation","skill":"hello_quantum","input":{"qubits":2,"shots":1024},"constraints":{"max_cost_usd":0,"allow_cloud_quantum":false}}'
-
-curl http://localhost:8000/v1/jobs/job_<uuid>
-
-curl -X POST http://localhost:8000/v1/agents/run \
-  -H "Content-Type: application/json" \
-  -d '{"agent":"BackendSelectionAgent","task":{"job_type":"optimization","constraints":{"max_cost_usd":0,"allow_cloud_quantum":false}}}'
 ```
 
-## CLI Examples
+CLI (local):
 
 ```bash
-pip install -e .
 export QUANTUMOS_API_URL=http://localhost:8000
-
 quantumos health
-quantumos providers
 quantumos skills list
 quantumos run qrng_demo --input skills/qrng_demo/sample_input.json
-quantumos jobs list
-quantumos agent run BackendSelectionAgent --input examples/agent_task.json
-quantumos audit list
-quantumos crypto encrypt --input examples/payload.json
 ```
 
-## Quantum Providers
+---
 
-QuantumOS routes jobs to simulators and cloud QPUs. Install optional SDKs, set credentials in `.env`, then check `GET /v1/providers`.
+## Quantum providers
 
-| Provider | Region | Install | Credentials |
-|----------|--------|---------|-------------|
-| `qiskit_aer` | Local | `pip install -e ".[quantum]"` | None |
-| `pennylane_default_qubit` | Local | `pip install -e ".[quantum]"` | None |
-| `origin_quantum` | China / local | `pip install -e ".[origin]"` | Optional `ORIGIN_QUANTUM_API_KEY` for WuKong cloud ([free research program](https://qcloud.originqc.com.cn/en/researchincentive)) |
-| `azure_quantum` | Azure global | `pip install -e ".[azure]"` | `AZURE_QUANTUM_RESOURCE_ID` + `az login` |
-| `ibm_quantum` | IBM Cloud | `pip install -e ".[ibm]"` | `IBM_QUANTUM_TOKEN` |
+| Provider | Where | Install extra | Credentials |
+|----------|-------|---------------|-------------|
+| `qiskit_aer` | Local sim | `.[quantum]` | None |
+| `pennylane_default_qubit` | Local sim | `.[quantum]` | None |
+| `origin_quantum` | Local / cloud | `.[origin]` | Optional API key |
+| `azure_quantum` | Cloud | `.[azure]` | Azure resource + `az login` |
+| `ibm_quantum` | Cloud | `.[ibm]` | `IBM_QUANTUM_TOKEN` |
 
-Full technical treatment (Bell-state reference circuit, job lifecycle, physics intuition): **[docs/QUANTUM_RESEARCH.md](docs/QUANTUM_RESEARCH.md)**.
+Cloud jobs need `allow_cloud_quantum: true` in constraints. Deep dive: [docs/QUANTUM_RESEARCH.md](docs/QUANTUM_RESEARCH.md).
 
-```bash
-# Local simulators + Origin CPUQVM (free)
-pip install -e ".[quantum,origin]"
+---
 
-# Everything including Azure + IBM cloud
-pip install -e ".[all]"
-```
-
-Cloud jobs require `allow_cloud_quantum: true` in job constraints (the dashboard enables this automatically when you pick a cloud backend).
-
-## How to Add a Provider
-
-1. Create `providers/my_provider.py` implementing `QuantumProvider`:
-
-```python
-from providers.base import ProviderResult, QuantumProvider
-
-class MyProvider(QuantumProvider):
-    name = "my_provider"
-    provider_type = "local"
-    capabilities = ["circuit_simulation"]
-
-    def is_available(self) -> bool:
-        return True
-
-    def estimate(self, job): ...
-    def run_job(self, job) -> ProviderResult: ...
-```
-
-2. Register it in `core/registry/provider_registry.py`.
-
-## How Skills Work
-
-Skills are reusable QuantumOS capabilities — small apps that prepare inputs, run domain logic, and return structured results. They are **not** standalone HTTP endpoints; they run inside the **job pipeline** alongside a quantum or classical **provider**.
-
-### Architecture
+## How skills work
 
 ```
 Dashboard / CLI / Use Cases
         │
         ▼
-  POST /v1/jobs  (skill + job_type + input)
+  POST /v1/jobs
+        │
+        ├── SkillRegistry → skills/*/handler.py
+        └── BackendRouter → simulator / classical / cloud
         │
         ▼
-  Job Scheduler
-        ├── SkillRegistry.run_skill()  → skill logic (handler.py)
-        └── BackendRouter → Provider.run_job()  → simulator / classical / mock
-        │
-        ▼
-  Merged result saved to DB (skill output nested under result.skill)
+  Result in DB (provider fields + result.skill)
 ```
 
-1. **Discovery** — On startup, `SkillRegistry` scans `skills/*/skill.yaml` and loads metadata.
-2. **Execution** — When a job includes a `skill` field, the scheduler calls `handler.py` → `run(input_data)`.
-3. **Provider pass** — The selected backend (e.g. `qiskit_aer`, `classical_local`, `mock_provider`) also runs based on `job_type`.
-4. **Merged output** — Provider output and skill output are combined: `{ ...provider_fields, "skill": { ...skill_fields } }`.
-
-### Built-in skills (v0.2)
-
-| Skill | Category | What it does | Dashboard result view |
-|-------|----------|--------------|------------------------|
-| `hello_quantum` | Quantum circuits | Builds a Bell-state circuit (H + CNOT + measure); provider adds measurement counts | Circuit steps + histogram |
-| `qrng_demo` | Randomness | Generates random bytes with entropy analysis (OS CSPRNG demo) | Hex output + entropy meter |
-| `bb84_simulator` | Quantum cryptography | Full BB84 QKD simulation: bases, sifted key, QBER | Protocol timeline table |
-| `portfolio_optimizer` | Finance | Risk-aware portfolio weights and USD allocation | Pie chart + return/vol metrics |
-| `route_optimizer` | Logistics | Nearest-neighbor TSP route with leg distances | Route timeline |
-| `pqc_encryptor` | Security | Encrypts a payload via mock PQC service (Fernet demo) | Plaintext/ciphertext preview |
-| `crypto_migration_scan` | Security | Scans code for weak crypto (RSA, MD5, ECDSA, etc.) with line-level findings | Findings table + risk level |
-
-> **Demo disclaimer:** QRNG uses OS randomness, PQC is mock Fernet (not NIST PQC), BB84 is educational simulation, and optimizers use heuristics — not production trading or routing engines.
-
-### Skill folder layout
-
-Each skill lives under `skills/<name>/`:
+Each skill is a folder under `skills/<name>/`:
 
 ```
 skills/hello_quantum/
-  skill.yaml          # Manifest: metadata, input_fields, default_job_type
-  handler.py          # def run(input_data: dict) -> dict
-  sample_input.json   # Optional default input for API and dashboard
+  skill.yaml
+  handler.py
+  sample_input.json
 ```
 
-### Manifest (`skill.yaml`)
+`handler.py` must define `run(input_data: dict) -> dict`.
 
-Key fields the API exposes and the dashboard uses:
+To add a skill: create the folder, restart the API, it shows up on `/v1/skills`.
 
-```yaml
-name: hello_quantum
-version: 0.2.0
-type: quantum_demo
-description: Human-readable summary shown on skill cards
-default_job_type: circuit_simulation   # Used by scheduler + router
-category: Quantum circuits             # Groups cards on /skills
-icon: "⚛️"
-result_view: circuit                   # Picks dashboard visualization
-features:
-  - Bullet points shown on skill cards
-input_fields:                          # Drives the form on /skills
-  - name: qubits
-    type: number                       # number | text | tags | select | boolean | code
-    label: Qubits
-    min: 2
-    max: 4
-    default: 2
-    help: Optional hint text
-```
+---
 
-Supported `input_fields` types map to dashboard controls: sliders/numbers, text inputs, comma-separated tags, dropdowns, checkboxes, and code editors.
+## Honest limitations (read this)
 
-### API
+- **Mock PQC skill** uses Fernet for demos. The **account vault** use case uses real ML-KEM / ML-DSA libraries — still not a certified HSM product.
+- **QRNG demo** uses OS randomness unless you wire real hardware.
+- **Optimizers** are heuristics and simulators, not production trading or routing engines.
+- **BB84 / QKD** here is simulation, not fiber hardware.
+- **No guaranteed quantum speedup** — many paths are quantum-inspired classical code on simulators.
 
-| Method | Endpoint | Purpose |
-|--------|----------|---------|
-| `GET` | `/v1/skills` | List all skills with full metadata |
-| `GET` | `/v1/skills/{name}` | Skill detail + `sample_input` |
-| `GET` | `/v1/skills/{name}/sample` | Sample input + `default_job_type` |
-| `POST` | `/v1/jobs?wait=true` | **Run a skill** (primary execution path) |
+---
 
-**List skills:**
-
-```bash
-curl http://localhost:8000/v1/skills
-```
-
-**Run a skill as a job:**
-
-```bash
-curl -X POST "http://localhost:8000/v1/jobs?wait=true" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "job_type": "circuit_simulation",
-    "skill": "hello_quantum",
-    "input": {"qubits": 2, "shots": 1024},
-    "constraints": {"max_cost_usd": 0, "allow_cloud_quantum": false, "allow_simulator": true},
-    "preferred_backend": "auto",
-    "data_classification": "public_demo"
-  }'
-```
-
-The response includes `state`, `job_id`, and `result`. Skill-specific output is under `result.skill`; provider fields (e.g. `counts`, `provider`) are at the top level of `result`.
-
-**Get skill detail with defaults:**
-
-```bash
-curl http://localhost:8000/v1/skills/portfolio_optimizer
-```
-
-### Dashboard
-
-| Page | URL | What you can do |
-|------|-----|-----------------|
-| **Skills catalog** | `/skills` | Browse all skills by category; click a card to expand the feature panel |
-| **Skill detail** | `/skills/{name}` | Full-page form, run button, and result visualization |
-| **Jobs** | `/jobs` | Submit jobs via JSON; view history |
-| **Job detail** | `/jobs/{id}` | Skill-aware result view when the job has a `skill` field |
-| **Home** | `/` | Quick Launch — one-click run for every skill |
-
-**Using the Skills page:**
-
-1. Open http://localhost:5173/skills (API must be running on port 8000).
-2. Click a skill card to expand it.
-3. Configure inputs in the form (or switch to **Advanced JSON editor**).
-4. Click **Run skill** — the job runs synchronously (`wait=true`).
-5. Results appear in the right panel (charts, tables, timelines depending on `result_view`).
-
-If the page is empty, the API is likely offline. Start it with:
-
-```bash
-# Windows (from repo root)
-$env:PYTHONPATH = (Get-Location)
-$env:DATABASE_URL = "sqlite:///./quantumos_local.db"
-.\.venv\Scripts\uvicorn apps.api.quantumos_api.main:app --host 127.0.0.1 --port 8000
-```
-
-```bash
-# Dashboard (separate terminal)
-cd apps/dashboard
-$env:VITE_API_URL = "http://127.0.0.1:8000"
-npm run dev -- --host 127.0.0.1 --port 5173
-```
-
-Or use `.\scripts\start-local.ps1` on Windows.
-
-### CLI
-
-```bash
-quantumos skills list
-quantumos run hello_quantum --input skills/hello_quantum/sample_input.json
-quantumos run crypto_migration_scan --input skills/crypto_migration_scan/sample_input.json
-```
-
-### Handler contract
-
-Every `handler.py` must expose:
-
-```python
-from typing import Any
-
-def run(input_data: dict[str, Any]) -> dict[str, Any]:
-    # Read inputs, run logic, return structured dict
-    return {"skill": "my_skill", "output_key": "value"}
-```
-
-Return structured data (lists, metrics, previews) that both the API and dashboard `result_view` components can render.
-
-## How to Add a Skill
-
-1. Create `skills/my_skill/skill.yaml` with `name`, `description`, `default_job_type`, `input_fields`, and `result_view`.
-2. Create `skills/my_skill/handler.py` with `def run(input_data: dict) -> dict`.
-3. Add optional `skills/my_skill/sample_input.json` for defaults.
-4. Restart the API (registry auto-discovers on each request) — the skill appears on `/skills` and in `GET /v1/skills`.
-5. Run via dashboard, `POST /v1/jobs`, or `quantumos run my_skill --input ...`.
-
-No database migration is required; skills are filesystem-discovered.
-
-## Security Warnings
-
-- **Mock PQC**: Encryption in MVP uses Fernet (symmetric demo). It is labeled `MOCK_PQC_NON_PRODUCTION`. Do not use for production secrets.
-- **No plaintext secrets in logs**: Do not pass credentials in job inputs logged to audit metadata.
-- **Cloud placeholders**: Azure/QCompute/pyQPanda providers are disabled placeholders until configured.
-- **Policy engine**: Default policy blocks cloud quantum without approval and restricts cost-zero jobs to local providers.
-
-## Roadmap
-
-- Redis/Celery/Temporal job queue
-- LLM-based agents
-- liboqs / OQS provider integration
-- Kubernetes appliance packaging
-- QShield integration
-- Certified compliance modes for fintech tenants
-
-## Monorepo Layout
+## Repo layout
 
 ```
 quantumos/
-  apps/api/          FastAPI service
-  apps/cli/          Typer CLI
-  apps/dashboard/    React + TypeScript + Tailwind
-  core/              Kernel, scheduler, router, policy, audit
-  providers/         Quantum and classical backends
-  agents/            Rule-based agents
-  skills/            Reusable QuantumOS apps
-  security/          Crypto services
-  db/                SQLAlchemy models
+  apps/api/           FastAPI
+  apps/dashboard/     React UI
+  apps/cli/           Typer CLI
+  core/               Scheduler, router, policy, audit
+  providers/          Backends
+  agents/             Rule-based agents
+  skills/             Skill handlers
+  use_cases/          Industry app catalog + comparison
+  security/           Crypto helpers
+  db/                 SQLAlchemy
   tests/
 ```
 
+---
+
+## Docs in the app
+
+| Page | URL |
+|------|-----|
+| User guide | `/guide` |
+| Dev guide | `/dev-guide` |
+| README (in app) | `/readme` |
+| Industry Apps | `/use-cases` |
+
+---
+
 ## License
 
-Apache-2.0 (adjust as needed for your organization).
+Apache-2.0 (adjust for your org if needed).
