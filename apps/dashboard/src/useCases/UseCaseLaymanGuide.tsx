@@ -49,6 +49,23 @@ export default function UseCaseLaymanGuide({ useCaseId, inputFields, compact }: 
 
       {!compact && (
         <>
+          <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+            <p className="text-xs font-bold uppercase text-slate-600 mb-1">{guide.technicalTitle}</p>
+            <p className="text-sm text-slate-800 leading-relaxed">{guide.technicalPlain}</p>
+            {guide.libraries.length > 0 && (
+              <div className="flex flex-wrap gap-1.5 mt-3">
+                {guide.libraries.map((lib) => (
+                  <span
+                    key={lib}
+                    className="text-[10px] font-medium px-2 py-0.5 rounded-md bg-white border border-slate-200 text-slate-700"
+                  >
+                    {lib}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+
           <div className="rounded-xl border border-violet-200 bg-violet-50 p-4">
             <p className="text-xs font-bold uppercase text-violet-800 mb-1">Notes</p>
             <p className="text-sm text-violet-950 leading-relaxed">{guide.innovation}</p>

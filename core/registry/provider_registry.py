@@ -4,6 +4,8 @@ from providers.mock_provider import MockProvider
 from providers.oqs_provider import OQSCryptoProvider
 from providers.pennylane_provider import PennyLaneProvider
 from providers.qiskit_provider import IBMQuantumProvider, QiskitAerProvider
+from providers.tfq_provider import TensorFlowQuantumProvider
+from providers.cuquantum_provider import CuQuantumProvider
 from providers.azure_quantum_provider import AzureQuantumProvider, AzureQuantumPlaceholder
 from providers.origin_quantum_provider import (
     OriginQuantumProvider,
@@ -23,6 +25,8 @@ class ProviderRegistry:
             MockProvider,
             QiskitAerProvider,
             PennyLaneProvider,
+            TensorFlowQuantumProvider,
+            CuQuantumProvider,
             OriginQuantumProvider,
             AzureQuantumProvider,
             IBMQuantumProvider,

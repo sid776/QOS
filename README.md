@@ -48,9 +48,36 @@ pytest tests/ -v
 
 ---
 
+## Quantum software stack
+
+QuantumOS is a **coordination layer** — it does not replace these libraries. It routes jobs to whichever backends you install and exposes them through one API, dashboard, and skill interface.
+
+| Library / service | Role in QuantumOS | Install |
+|-------------------|-------------------|---------|
+| **Qiskit + Aer** | Default local simulators, Bell/`hello_quantum` circuits, benchmark cross-checks | `pip install -e ".[quantum]"` |
+| **PennyLane** | VQE proxies, QAOA-style demos, chemistry, Monte Carlo, and RAG paths | `pip install -e ".[quantum]"` |
+| **TensorFlow Quantum (TFQ)** | Cirq→TFQ validation; extra backend in the simulator benchmark | `pip install -e ".[tfq]"` * |
+| **NVIDIA cuQuantum** | GPU statevector via `cuquantum_aer` when CUDA drivers are present | `pip install -e ".[cuquantum]"` + CUDA |
+| **Azure Quantum** | Cloud ion-trap / annealing targets when workspace + `az login` are configured | `pip install -e ".[azure]"` |
+| **IBM Quantum** | Cloud superconducting backends via Qiskit Runtime | `pip install -e ".[ibm]"` |
+| **kyber-py / dilithium-py** | Real NIST ML-KEM-768 / ML-DSA-65 in account vault and wallet use cases | base install |
+| **Origin Quantum (pyqpanda3)** | Optional China-region CPUQVM / cloud | `pip install -e ".[origin]"` |
+
+\* **TFQ note:** TensorFlow Quantum currently pins to Python **< 3.12**. This repo targets 3.12+, so the `tensorflow_quantum` provider registers but reports unavailable until TFQ ships 3.12 wheels. Check live status with:
+
+```bash
+curl https://your-host/v1/providers/frameworks
+```
+
+The dashboard **Providers** page and each Industry App’s layman guide show the same library list per scenario (plain-language problem/solution up top, **Under the hood** below).
+
+---
+
 ## Industry Apps — what each one is for
 
 These are the sixteen scenarios under **Industry Apps** in the dashboard. Each one walks you through inputs, runs a real pipeline, shows you results, and compares them to a simpler “traditional” approach at the bottom.
+
+Every scenario has **two write-ups**: a layman explanation (problem → what you run → what you get) and a short **Under the hood** technical note listing the real libraries and skills involved.
 
 None of these replace production systems out of the box. They are working demos with honest baselines — useful for learning, sales engineering, and prototyping.
 
@@ -68,6 +95,10 @@ None of these replace production systems out of the box. They are working demos 
 
 **What you get:** A pie chart of weights, dollar amounts per ticker, expected return and volatility, and a comparison showing how much better this is than naïve equal-weighting.
 
+**Under the hood:** Agent workflow calls `portfolio_optimizer` with risk-adjusted heuristics vs equal-weight baseline. PennyLane or Qiskit Aer can run QAOA-style circuit proxies when the router picks a quantum backend.
+
+**Libraries:** PennyLane, Qiskit Aer, `portfolio_optimizer` skill
+
 ---
 
 ### 2. Last-mile delivery routing
@@ -81,6 +112,10 @@ None of these replace production systems out of the box. They are working demos 
 **What happens:** The app keeps your original stop order as the “before” baseline, then runs a route optimizer to shorten total distance.
 
 **What you get:** A map-style route list, km per leg, total distance, fuel cost estimate, and how much distance you saved versus driving in input order.
+
+**Under the hood:** Classical baseline keeps input stop order; `route_optimizer` builds a distance matrix and runs nearest-neighbor TSP heuristics. Same skill interface can target Qiskit QAOA or annealing backends in production.
+
+**Libraries:** `route_optimizer`, Qiskit Aer, `classical_local` provider
 
 ---
 
@@ -96,6 +131,10 @@ None of these replace production systems out of the box. They are working demos 
 
 **What you get:** Line-level findings, risk level, recommendation text, and a side-by-side vs “we only ran regex” baseline.
 
+**Under the hood:** Regex baseline flags RSA, MD5, SHA-1, and ECDSA patterns. `crypto_migration_scan` returns structured findings plus a mock PQC encrypt step via the `cryptography` stack and NIST vault helpers.
+
+**Libraries:** `crypto_migration_scan`, `cryptography`, NISTAccountVault
+
 ---
 
 ### 4. Metro fiber QKD (BB84 link planning)
@@ -109,6 +148,10 @@ None of these replace production systems out of the box. They are working demos 
 **What happens:** BB84 is simulated: raw bits, sifting, quantum bit error rate (QBER), sifted key preview.
 
 **What you get:** Alice/Bob style protocol stats, QBER, key length, and comparison to classical pre-shared key approaches.
+
+**Under the hood:** `bb84_simulator` models Alice/Bob basis choices, sifting, and QBER from link distance and bit count. Output includes sifted key length vs a classical PSK baseline with no tamper detection.
+
+**Libraries:** `bb84_simulator`
 
 ---
 
@@ -124,6 +167,10 @@ None of these replace production systems out of the box. They are working demos 
 
 **What you get:** Entropy spectrum, algorithm stack, KEM ciphertext preview, encrypted payload preview, and compliance notes. Comparison at the bottom vs RSA-style storage.
 
+**Under the hood:** `qrng_demo` generates the session nonce; `account_vault_encrypt` wraps the record with ML-KEM-768 + AES-256-GCM + ML-DSA-65 via **kyber-py** and **dilithium-py**. Classical RSA binding with seeded PRNG shown side-by-side.
+
+**Libraries:** kyber-py, dilithium-py, `qrng_demo`, `account_vault_encrypt`
+
 ---
 
 ### 6. Battery cathode circuit (automotive chemistry)
@@ -137,6 +184,10 @@ None of these replace production systems out of the box. They are working demos 
 **What happens:** A small entangled circuit runs on a simulator (stepping stone to full VQE chemistry). Results include gate list and measurement histogram.
 
 **What you get:** Fidelity vs classical mean-field, material context, circuit breakdown, shot counts.
+
+**Under the hood:** `hello_quantum` builds a Bell-state circuit with configurable qubits and shots; fidelity is compared to a Hartree-Fock mean-field baseline. Same pipeline is the stepping stone toward PennyLane VQE on cathode Hamiltonians.
+
+**Libraries:** `hello_quantum`, PennyLane, Qiskit Aer
 
 ---
 
@@ -152,6 +203,10 @@ None of these replace production systems out of the box. They are working demos 
 
 **What you get:** Per-backend previews, recommendation, agreement score, export-friendly summary.
 
+**Under the hood:** `ProviderRegistry` probes installed SDKs and runs the same `hello_quantum` circuit across Qiskit Aer, PennyLane, **TensorFlow Quantum**, **NVIDIA cuQuantum**, **Azure Quantum**, and **IBM Quantum** when credentials and drivers are present. Use `GET /v1/providers/frameworks` to see what is importable on your machine.
+
+**Libraries:** Qiskit Aer, PennyLane, TensorFlow Quantum, NVIDIA cuQuantum, Azure Quantum, IBM Quantum
+
 ---
 
 ### 8. Insurance fraud feature probe (secure pipeline)
@@ -165,6 +220,10 @@ None of these replace production systems out of the box. They are working demos 
 **What happens:** Crypto scan → policy agent → quantum simulate (only if allowed) → explanation.
 
 **What you get:** Findings table, approve/block verdict, circuit output if cleared, auditor-friendly narrative.
+
+**Under the hood:** `crypto_migration_scan` flags legacy crypto in feature-store code before any job runs. If policy gates pass, `hello_quantum` executes a small circuit as the quantum simulation step.
+
+**Libraries:** `crypto_migration_scan`, `hello_quantum`
 
 ---
 
@@ -180,6 +239,10 @@ None of these replace production systems out of the box. They are working demos 
 
 **What you get:** Binding energy estimates, confidence comparison, conformation search context, measurement histogram.
 
+**Under the hood:** Classical MM/GBSA estimates binding kcal/mol from force-field heuristics. `hello_quantum` runs an entangled VQE proxy circuit with shot histograms; conformation search space scales with qubit count on the PennyLane path.
+
+**Libraries:** PennyLane, `hello_quantum`
+
 ---
 
 ### 10. Renewable grid dispatch
@@ -193,6 +256,10 @@ None of these replace production systems out of the box. They are working demos 
 **What happens:** Classical greedy dispatch vs a quantum-inspired unit commitment optimizer on the same grid inputs.
 
 **What you get:** Cost index, CO₂ intensity, renewable utilization, regional dispatch weights.
+
+**Under the hood:** Classical merit-order greedy dispatch sets baseline cost and carbon index. `portfolio_optimizer` reuses risk-adjusted weighting heuristics as a quantum-inspired unit-commitment proxy across generation regions.
+
+**Libraries:** `portfolio_optimizer`, `classical_local` provider
 
 ---
 
@@ -208,6 +275,10 @@ None of these replace production systems out of the box. They are working demos 
 
 **What you get:** VaR numbers, effective paths compared, runtime, regulatory framework context (Basel / FRTB as labels, not certification).
 
+**Under the hood:** Classical Monte Carlo draws random paths proportional to `simulation_paths` for VaR99. Quantum side uses a PennyLane amplitude-estimation proxy reporting higher effective path coverage at lower wall time for the same notional.
+
+**Libraries:** PennyLane
+
 ---
 
 ### 12. Semiconductor fab yield
@@ -221,6 +292,10 @@ None of these replace production systems out of the box. They are working demos 
 **What happens:** Classical SPC baseline vs a quantum-kernel anomaly detector proxy.
 
 **What you get:** Predicted yield, defect PPM, detection latency, circuit histogram.
+
+**Under the hood:** Classical SPC/PCA sets yield and defect PPM baselines. `hello_quantum` runs an entangled feature-map circuit as a quantum-kernel anomaly proxy with sub-10ms detection latency in demo metrics.
+
+**Libraries:** `hello_quantum`, classical SPC
 
 ---
 
@@ -236,6 +311,10 @@ None of these replace production systems out of the box. They are working demos 
 
 **What you get:** Recall@K, latency, vectors examined, similarity circuit context.
 
+**Under the hood:** Classical HNSW approximate search sets recall and latency baselines at large corpus scale. `hello_quantum` runs a Grover-style amplitude amplification proxy via PennyLane similarity circuits, reporting fewer vectors examined at higher recall@K.
+
+**Libraries:** PennyLane, `hello_quantum`
+
 ---
 
 ### 14. Protein folding (genomics / VQE)
@@ -249,6 +328,10 @@ None of these replace production systems out of the box. They are working demos 
 **What happens:** VQE folding proxy vs homology baseline when template flag is off.
 
 **What you get:** RMSD estimate, folding energy, confidence comparison, circuit output.
+
+**Under the hood:** Classical homology modeling (MODELLER-style) fails or degrades without a PDB template. `hello_quantum` runs a VQE energy-minimization proxy on the PennyLane path, reporting RMSD, folding energy, and shot histograms.
+
+**Libraries:** PennyLane, `hello_quantum`
 
 ---
 
@@ -264,6 +347,10 @@ None of these replace production systems out of the box. They are working demos 
 
 **What you get:** Vault package preview, holdings at risk, migration timeline, quantum-safe status.
 
+**Under the hood:** `account_vault_encrypt` seals wallet metadata with ML-KEM-768 and ML-DSA-65 through **kyber-py** and **dilithium-py** (same NISTAccountVault stack as the account app). ECDSA on-chain exposure is scored against the hardened key package.
+
+**Libraries:** kyber-py, dilithium-py, `account_vault_encrypt`
+
 ---
 
 ### 16. City-wide traffic optimization
@@ -277,6 +364,10 @@ None of these replace production systems out of the box. They are working demos 
 **What happens:** Fixed-timing baseline vs coordinated signal optimization proxy across the network.
 
 **What you get:** Commute time delta, CO₂ comparison, throughput uplift, route/heatmap-style visuals.
+
+**Under the hood:** Fixed-timing baseline models static signal plans with no network coordination. `route_optimizer` applies nearest-neighbor TSP heuristics as a QAOA proxy to reorder intersection phases across the metro grid.
+
+**Libraries:** `route_optimizer`, QAOA proxy
 
 ---
 
@@ -330,9 +421,18 @@ quantumos run qrng_demo --input skills/qrng_demo/sample_input.json
 |----------|-------|---------------|-------------|
 | `qiskit_aer` | Local sim | `.[quantum]` | None |
 | `pennylane_default_qubit` | Local sim | `.[quantum]` | None |
+| `tensorflow_quantum` | Local sim (Cirq/TFQ) | `.[tfq]` * | None |
+| `cuquantum_aer` | Local GPU sim | `.[cuquantum]` + CUDA | None |
 | `origin_quantum` | Local / cloud | `.[origin]` | Optional API key |
 | `azure_quantum` | Cloud | `.[azure]` | Azure resource + `az login` |
 | `ibm_quantum` | Cloud | `.[ibm]` | `IBM_QUANTUM_TOKEN` |
+
+\* TFQ: see [Quantum software stack](#quantum-software-stack) — Python 3.12 limitation.
+
+```bash
+curl https://your-host/v1/providers/frameworks   # which SDKs are importable
+curl https://your-host/v1/providers              # which providers are available
+```
 
 Cloud jobs need `allow_cloud_quantum: true` in constraints. Deep dive: [docs/QUANTUM_RESEARCH.md](docs/QUANTUM_RESEARCH.md).
 

@@ -8,7 +8,7 @@ from providers.circuit_builder import job_qubits_shots
 class PennyLaneProvider(QuantumProvider):
     name = "pennylane_default_qubit"
     provider_type = "simulator"
-    capabilities = ["circuit_simulation", "quantum_machine_learning", "quantum_demo"]
+    capabilities = ["circuit_simulation", "quantum_machine_learning", "quantum_demo", "quantum_chemistry"]
     description = "PennyLane default.qubit simulator — differentiable quantum programming."
     docs_url = "https://pennylane.ai/"
     region = "local"

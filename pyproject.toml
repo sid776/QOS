@@ -31,6 +31,15 @@ quantum = [
     "qiskit-aer>=0.15.0,<0.18",
     "pennylane>=0.38.0,<0.46",
 ]
+tfq = [
+    "tensorflow>=2.15.0,<2.19; python_version < '3.12'",
+    "tensorflow-quantum>=0.7.3; python_version < '3.12'",
+    "cirq-core>=1.3.0,<1.5",
+]
+cuquantum = [
+    "qiskit>=1.2.0,<2.5",
+    "qiskit-aer>=0.15.0,<0.18",
+]
 azure = [
     "qiskit>=1.2.0,<2.5",
     "azure-quantum>=3.0.0,<4.0",
@@ -49,6 +58,9 @@ all = [
     "qiskit>=1.2.0,<2.5",
     "qiskit-aer>=0.15.0,<0.18",
     "pennylane>=0.38.0,<0.46",
+    "tensorflow>=2.15.0,<2.19; python_version < '3.12'",
+    "tensorflow-quantum>=0.7.3; python_version < '3.12'",
+    "cirq-core>=1.3.0,<1.5",
     "pyqpanda3>=0.3.5",
     "qpanda3_runtime>=1.0.0",
     "azure-quantum>=3.0.0,<4.0",
