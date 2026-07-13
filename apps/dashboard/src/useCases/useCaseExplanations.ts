@@ -1,6 +1,14 @@
+import { USE_CASE_DETAILED } from "./useCaseDetailedWriteups";
+
 export type FieldExplanation = {
   name: string;
   plain: string;
+};
+
+export type AnalyzeFlowStep = {
+  phase: string;
+  layman: string;
+  technical: string;
 };
 
 export type UseCaseExplanation = {
@@ -18,6 +26,18 @@ export type UseCaseExplanation = {
   quantumApproach: string;
   whatYouGet: string[];
   fieldHelp: FieldExplanation[];
+  /** Extended end-to-end writeup (merged from useCaseDetailedWriteups) */
+  audience?: string;
+  realWorldContext?: string;
+  problemDeep?: string;
+  solutionDeep?: string;
+  userSteps?: string[];
+  analyzeFlow?: AnalyzeFlowStep[];
+  classicalDeep?: string;
+  quantumDeep?: string;
+  technicalDeep?: string;
+  outputsDeep?: string[];
+  limitations?: string[];
 };
 
 export const USE_CASE_EXPLANATIONS: Record<string, UseCaseExplanation> = {
@@ -512,5 +532,8 @@ export const USE_CASE_EXPLANATIONS: Record<string, UseCaseExplanation> = {
 };
 
 export function getUseCaseExplanation(id: string): UseCaseExplanation | null {
-  return USE_CASE_EXPLANATIONS[id] ?? null;
+  const base = USE_CASE_EXPLANATIONS[id];
+  if (!base) return null;
+  const detail = USE_CASE_DETAILED[id];
+  return detail ? { ...base, ...detail } : base;
 }

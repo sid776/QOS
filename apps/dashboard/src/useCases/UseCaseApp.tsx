@@ -213,7 +213,7 @@ export default function UseCaseApp() {
       </div>
 
       {wizardStep === "understand" && (
-        <OSWindow title="Problem & solution — plain English" icon="📖" accent="blue" width="full">
+        <OSWindow title="Full scenario guide — problem, pipeline, outputs" icon="📖" accent="blue" width="full">
           <UseCaseLaymanGuide useCaseId={uc.id} inputFields={fields} />
           <div className="mt-8 pt-6 border-t border-slate-200">
             <ActionButton onClick={() => setWizardStep("inputs")}>Got it — configure my scenario →</ActionButton>
